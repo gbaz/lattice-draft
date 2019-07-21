@@ -57,7 +57,7 @@ We introduce here some basic facts and notation regarding order theory, lattices
 
 A \textbf{partially ordered set} or poset, \(P\) is a set equipped with a partial order relation \(\le\), which is transitive,  reflexive, and antisymmetric (i.e. for which \( a \le b \mathbin{\&\&} b \le a \implies a = b\)). A (homo)morphism of posets is an monotone (order-preserving) function on their elements, and with such morphisms posets form the category \(Pos\) and finite posets form the subcategory \(FinPos\). Two posets are equivalent when there exist morphisms \(f, g\) between them such that \(f \odot g = id\) and \(g \odot f = id\), i.e. when they are equivalent as objects of \(Pos\). We note that all posets have a standard partial order on them such that \(P \le Q\) when there exists an order-preserving embedding \(P \rightarrow Q\).
 
-A \textbf{lattice}, \(L\) is partially ordered set for which every two elements have a unique greatest lower bound, their \textbf{meet} (\(\wedge\)) and a unique least upper bound, their \textbf{join} (\(\vee\)). The join and meet operations of a lattice are necessarily commutative, associative, and idempotent. A (homo)morphism of distributive lattices is a morphism of posets which also preserves meets and joins. A \textbf{join-semilattice} \textbf{meet-semilattice} are posets that respectively have all joins or all meets. A \textbf{complete lattice} is a lattice which has joins and meets of infinitary as well as finitary collections of elements. We write \(\bigwedge\) and \(\bigvee\) for the meet and join operations as applied to an entire set of elements. By abuse of notation, we also may write, e.g., \(x \vee S\) where \(x\) is an element of a poset and \(S\) is a set of elements, to indicate the lifting of application of the unary operation \(x \vee -\) to every element in the set.
+A \textbf{lattice}, \(L\) is partially ordered set for which every two elements have a unique greatest lower bound, their \textbf{meet} (\(\wedge\)) and a unique least upper bound, their \textbf{join} (\(\vee\)). The join and meet operations of a lattice are necessarily commutative, associative, and idempotent. A (homo)morphism of distributive lattices is a morphism of posets which also preserves meets and joins. A \textbf{join-semilattice} and \textbf{meet-semilattice} are posets that respectively have all finite joins or all finite meets. A \textbf{complete lattice} is a lattice which has joins and meets of infinitary as well as finitary collections of elements. We write \(\bigwedge\) and \(\bigvee\) for the meet and join operations as applied to an entire set of elements. By abuse of notation, we also may write, e.g., \(x \vee S\) where \(x\) is an element of a poset and \(S\) is a set of elements, to indicate the lifting of application of the unary operation \(x \vee -\) to every element in the set.
 
 A \textbf{distributive lattice}, is a lattice satisfying the additional property that for all \(x, y, z\) in \(L\), \(x \vee (y \wedge z) = (x \vee y) \wedge (x \vee z)\). It is easy to verify that if this condition (join distributing over meet) is satisfied, then the dual condition (meet distributing over join) is also satisfied.  Lattice homomorphisms between distributive lattices are necessarily distributive lattice homomorphisms, and with such morphisms distributive lattices form the category \(DLat\) and finite distributive lattices form the subcategory \(FinDLat\). In \(FinDLat\), all lattices necessarily have a unique top and bottom element (i.e. are bounded). As such, we require morphisms in \(FinDLat\) to also preserve top and bottom elements as the nullary join and meet (i.e. to be homomorphisms of bounded lattices).
 
@@ -136,21 +136,20 @@ Clearly a finite lattice is distributive iff all downsets are distributive. Then
 A finite lattice is distributive iff all level-closed downsets are join-maximal.
 \end{corollary}
 
+% Remark a join-maximal set has no forbidden lattice configurations
+
 By the above results, maximal joins may be seen, in a sense, as the posetal analogue of joins in distributive lattices, or as "distributive joins" in a setting where not all meets and joins necessarily exist. As such, we call a poset morphism that preserves existing meets and maximal joins a \textbf{distributive morphism}.
 
 \begin{lemma}
-\(\Mcc(P)\) is an distributive morphism.
+\(\Mcc(P)\) is a distributive morphism.
 \end{lemma}
 \begin{proof}
 
 First we consider meets. Given, \(a \wedge b = c\), then we know that under the image of \(\Mcc\) each element maps to the set of of join-irreducibles below it. It follows that join-irreducible elements below \(c\) correspond to the intersection of those below \(a\) and \(b\).
 
-Next, we consider maximal joins.
+Next, we consider maximal joins. In the case of join-irreducible elements, this is immediate, as there are no joins to preserve.
 
-[PROOF NEEDS TO BE FILLED IN FROM NOTES]
-%First we consider joins. In the case of join-irreducible elements, this is immediate, as there are no joins to preserve. In the case of composite elements, for each set \(S\)  which they are the join of, then its basis is necessarily the join of the bases of the elements of x, and hence by construction \(\bigvee(\Mcc(S)) = \Mcc(\bigvee(S)\)), where \(\Mcc(S)\) is the application of \(\Mcc\) to every element of \(S\).
-
-%Next, we consider meets. Meets of join-irreducible elements are themselves join-irreducible, and so exactness is immediate. If an element is the meet of a set \(S\) of composite elements, then its basis is the meet of their bases, and hence \(\bigwedge(\Mcc(S)) = \Mcc(\bigwedge(S)\)).
+In the case of composite elements, take \(\Mcc(S)\) to be the application of \(\Mcc\) to every element of \(S\). \(\bigvee(\Mcc(S))\) is evidently the set of all join-irreducible elements below any element of \(S\). For \(\Mcc(\bigvee(S))\) to differ from this, there would have to be join-irreducible elements below the join of \(S\) but not below any element of \(S\). But this is precisely what is ruled out when \(S\) is join-maximal.
 \end{proof}
 
 %TODO show that M is the same as upside-down-M, aka W.
@@ -177,23 +176,20 @@ This constitutes the second universal characterization of \(\Mcc\).
 
 \subsection{Category-theoretic Characterization}
 
-From a category theoretic standpoint, \(\Mcc\) does not give rise in any obvious way to a satisfactory functor from \(FinPos\) to \(FinDLat\). Roughly speaking, this is because there exist monotone functions between distributive lattices which are not distributive lattice homomorphisms (i.e. \(FinPos\) is not a full subcategory of \(FinDLat\)). Nonetheless, we can proceed by restricting our attention to the category \(FinPosMMJ\), which is the subcategory of \(FinPos\) which consists of all posets but only has mmj-morphisms. \(FinPosMMJ\) is a full subcategory of \(FinDLat\), and further it is a reflective subcategory, with \(\Mcc\) as the reflector and the obvious forgetful functor (inclusion) as its right adjoint. 
+From a category theoretic standpoint, \(\Mcc\) does not give rise in any obvious way to a satisfactory functor from \(FinPos\) to \(FinDLat\). Roughly speaking, this is because there exist monotone functions between distributive lattices which are not distributive lattice homomorphisms (i.e. \(FinDLate\) is not a full subcategory of \(FinPos\)). Nonetheless, we can proceed by restricting our attention to the category \(FinPosDist\), which is the subcategory of \(FinPos\) which consists of all posets but only has distributive morphisms. \(FinDLat\) is a full subcategory of \(FinPosDist\), and further it is a reflective subcategory, with \(\Mcc\) as the reflector and the obvious forgetful functor (inclusion) as its right adjoint. \(\Mcc\) then acts on distributive morphisms in a straightforward way -- preserving their action on all elements in the original source and target, and extending their action on new elements in the source by sending them to the join in the target of the targets of their join-irreducible basis in the source.
 
 \begin{theorem}
-\(\Mcc : FinPosExact \rightarrow FinDLat \allowbreak  \dashv \allowbreak i : FinDLat \rightarrow FinPosMMJ\).
+\(\Mcc : FinPosDist \rightarrow FinDLat \allowbreak  \dashv \allowbreak i : FinDLat \rightarrow FinPosDist\).
 \end{theorem}
 
 \begin{proof}
-We proceed by constructing a direct isomorphism of hom-sets, i.e. showing that \(Hom_{FDL}(\Mcc(X),Y) \allowbreak \simeq \allowbreak Hom_{FPM}(X,i(Y))\). By Birkhoff, morphisms in \(FinDLat\) are in bijection with poset morphisms from the basis of the source to the basis of the target. Similarly, morphisms in \(FinPosMMJ\) which land in distributive lattices are also in bijection with poset morphisms from the basis of the source to the basis of the target. Finally, we observe that for all posets \(P\), by definition \(\Mcc(P)\) shares the same basis. Hence the two sides are in natural bijection.
+We proceed by constructing a direct isomorphism of hom-sets, i.e. showing that \(Hom_{FDL}(\Mcc(X),Y) \allowbreak \simeq \allowbreak Hom_{FPD}(X,i(Y))\). By Birkhoff, morphisms in \(FinDLat\) are in bijection with poset morphisms from the basis of the source to the basis of the target. Similarly, morphisms in \(FinPosDist\) which land in distributive lattices are also in bijection with poset morphisms from the basis of the source to the basis of the target. Finally, we observe that for all posets \(P\), by definition \(\Mcc(P)\) shares the same basis. Hence the two sides are in natural bijection.
 \end{proof}
 This constitutes the third universal characterization of \(\Mcc\), and also suffices to imply the Thm. 3.5. 
 
  %NOTE: we have to prove this bijection is natural? "everything in sight is natural."
 
-It is tempting to extend this approach back to the entirety of \(FinPos\). For example, consider building \(\Mcc'\)  with action on a morphism \(f : P \rightarrow Q\) generated by first considering only the join-irreducible elements of \(P\), which lift naturally under \(\Mcc'\), and then sending composite elements to the image of their join-irreducible basis, forgetting entirely their original targets. However, such a construction is not functorial. Consider a morphism \(f\) which sends at least some  elements of the basis into join-irreducible elements in the target. We can factor \(f\) into a pair of morphisms -- an injection into some larger object that lands only in composite elements, and then a map into the original target. \(\Mcc'\) of the composition would clearly not be the same as the original lifting. As such, we consider the question of a useful extension of \(\Mcc\) to all of \(FinPos\) an open question. 
-
-%TODO
-[IN FACT: can we prove that no such extension exists?]
+It is tempting to extend this approach back to the entirety of \(FinPos\). For example, consider building \(\Mcc'\)  with action on a morphism \(f : P \rightarrow Q\) generated by first considering only the join-irreducible elements of \(P\), which lift naturally under \(\Mcc'\), and then sending composite elements to the image of their join-irreducible basis, forgetting entirely their original targets. However, such a construction is not functorial. Consider a morphism \(f\) which sends at least some  elements of the basis into join-irreducible elements in the target. We can factor \(f\) into a pair of morphisms -- an injection into some larger object that lands only in composite elements, and then a map into the original target. \(\Mcc'\) of the composition would clearly not be the same as the original lifting. As such, we consider the question of a useful extension of \(\Mcc\) to all of \(FinPos\) an open question, though it seems likely from such "counting" arguments that no such extension exists.
 
 \subsection{Locale-theoretic characterization}
 
@@ -206,17 +202,21 @@ The poset endomorphism, \(jdb\), generated by the join-meet completion of the jo
 Since \(jdb\) is idempotent by construction and obviously contractive, we only need show it preserves meets; i.e. that that \(jdb(x) \wedge jdb(y) = jdb(x  \wedge  y)\).  If the meet is a meet of idempotents, then it is preserved by construction. If it is not, then it is the meet of elements which themselves are the meets of idempotents. As such, it may be rewritten to be a meet of idempotents, and thus is also preserved.
 \end{proof}
 
-
 \begin{theorem}
-\(\Mcc(P)\) may be calculated by the double-basis quotient of \(\Oc(P)\), i.e. \(\Mcc(P) = \Oc(P)/jdb\).
+The double basis topology is the least topology which preserves the join-irreducible elements of the underlying poset of a finite frame.
 \end{theorem}
 \begin{proof}
 Clearly \(\Oc(P)/jdb\) contains elements corresponding to all join-irreducible elements in \(P\), and they remain join-irreducible as no elements are added below them. Further, as it is a frame, it is a distributive lattice. It remains to show that it is the least such lattice. The only idempotents which could introduce new join-irreducible elements in the induced basis are the meets of existing elements, of the form  \(z = x \wedge y\). Then \(z = (a \vee b) \wedge (c \vee d)\) for some four elements (possibly overlapping) which are themselves join-irreducible or joins of join-irreducible elements..  By the laws of distributive lattices we may rewrite between disjunctive and conjunctive normal forms and so \(z = \bigvee \{a \wedge c, a \wedge d, b \wedge c, b \wedge d\}\).  But now it is a join of smaller meets. Inductively, either these meets are join-irreducible themselves, or they may be further iteratively decomposed until they are, and therefore the original element is a join of irreducible elements.
 \end{proof}
 %TODO check carefully.
 
+\begin{corollary}
+\(\Mcc(P)\) may be calculated by the double-basis quotient of \(\Oc(P)\), i.e. \(\Mcc(P) = \Oc(P)/jdb\).
+\end{corollary}
+
 
 %NOTE is there a locale/nucleus theoretic universal characterization of M?
+% jdb is the least topology that 
 
 
 % Related: Grothendieck topologies on posets, A.J. Lindenhovious
@@ -241,24 +241,80 @@ DSCs are richer than the standard notion of a dependency tree or dependency grap
 
 While the motivating example of event structures was in understanding things such as Petri nets and communicating sequential processes, our motivating example is in understanding the dependency structure of package collections, either within a language ecosystem, or within, e.g. the package repository for a linux distribution. It is straightforward to see the connection between the two. The installation of a package can be seen as an event, and the packages required to install that package are the event dependencies. Furthermore, some collections of packages may be incompatible, due to conflicts in usage of resources such as global namespace. So while the difference in motivation informs our thinking, the phenomena under examination are very similar from the a sufficient height of abstraction. A further set of examples which the present work sheds modest light on are the special case of dependency structures without choice -- i.e., pomsets -- used in distributed version control systems such as git, and in blockchain-style distributed ledgers.
 
+\subsection{Reachable Dependencies Posets of a DSC and the Merkle Transformation}
+
 \begin{definition} The \textbf{reachable dependency poset} of a DSC is the result of an operation, \(rdp\), which sends DSCs to bounded posets (i.e. posets with top and bottom elements) by the following two-step procedure:  We take as elements all collections of events, i.e. \(\Pc(E)\), and impose the least order relation such that one collection of events, \(X\), is above another, \(Y\), if \(Y \subset X\) and for every element of \(X\), there is a possible dependency set contained in \(Y\).  Finally, we restrict ourselves to only those elements of the poset which lie above the empty event set. 
 \end{definition}
 
-It follows that for any DSC \((E,D)\), \(rdp((E,D))\)  is a subposet of \(\Pc(E)\), and has all joins (i.e. unions). Viewed as a graph, nodes of a reachable dependency poset correspond to sets of events which are complete (i.e. for which each event in the set we can find other events in the set which satisfy one of its possible dependency sets), and edges correspond to linear accretion of event sets over time by addition of subsequent events. Consequently, a reachable dependency poset may also be seen as generated by considering all possible dependency sets of all events, augmenting each with the event itself, and then, under the inclusion ordering, augmenting the result with the empty set and in addition all possible joins. Intuitively, a reachable dependency set is generated by asking "for each event, what are the basic (reachable) event sets which contain it," and then completing those by the empty set and all unions of this basis.
+It follows that for any DSC \((E,D)\), \(rdp((E,D))\)  is a subposet of \(\Pc(E)\), and has all joins (i.e. unions). Viewed as a graph, nodes of a reachable dependency poset correspond to sets of events which are complete (i.e. for which each event in the set we can find other events in the set which satisfy one of its possible dependency sets), and edges correspond to linear accretion of event sets over time by addition of subsequent events. Consequently, a reachable dependency poset may also be seen as generated by considering all possible dependency sets of all events, augmenting each with the event itself, and then, under the inclusion ordering, augmenting the result with the empty set and in addition all possible joins. Informally, a reachable dependency set is generated by asking "for each event, what are the basic (reachable) event sets which contain it," and then completing those by the empty set and all unions of this basis.
 
 Intuitively, this looks similar to a topological space, with events as points, and reachable event sets as open covers. However, for a topological space, not only must the union of opens remain open (as is the case with reachable event sets), but the intersection of opens must also be open. Consider an event \(a\), which depends on either \(b\) or \(c\). \(\{a,b\}\) and  \(\{a,c\}\) are reachable event sets, but their intersection, \(\{a\}\), is not.
 
-To the vaguely formed question "how do we make reachable dependency posets topological" we propose a precise answer: application of the idempotent distributive lattice completion. This is to say, we take the composite \(\Mcc(rdp(E,D))\). As already discussed, the irreducible elements of a reachable dependency poset are those sets which are generated by the possible dependency sets of individual events -- i.e. that have an event which is shared by no complete dependency set below them. In the above example, the irreducible elements, i.e. \(\Oc(rdp(E,D))\), are \(\{b\}\), \(\{c\}\), \(\{a,b\}\), and \(\{a,c\}\). Hence the application of \(\Jc\) yields the four sets \(\{\{b\}\}\), \(\{\{c\}\}\), \(\{\{b\},\{a,b\}\}\), and \(\{\{c\},\{a,c\}\}\), but also \(\{\}\), \(\{\{b\},\{c\},\{b,c\}\}\) and \(\{\{b\},\{c\},\{a,b\},\{a,c\}\}\). (see figure n.)
+To the vaguely formed question "how do we make reachable dependency posets topological" we propose a precise answer: application of the idempotent distributive lattice completion. This is to say, we take the composite \(\Mcc(rdp(E,D))\). As already discussed, the irreducible elements of a reachable dependency poset are those sets which are generated by the possible dependency sets of individual events -- i.e. that have an event which is shared by no complete dependency set below them. In the above example, the irreducible elements, i.e. \(\Jc(rdp(E,D))\), are \(\{b\}\), \(\{c\}\), \(\{a,b\}\), and \(\{a,c\}\). Hence the application of \(\Oc\) yields the four sets \(\{\{b\}\}\), \(\{\{c\}\}\), \(\{\{b\},\{a,b\}\}\), and \(\{\{c\},\{a,c\}\}\), but also \(\{\}\), \(\{\{b\},\{c\},\{b,c\}\}\) and \(\{\{b\},\{c\},\{a,b\},\{a,c\}\}\). (see figure n.)
 
 
 %TODO add illustration
 
 
-Informally speaking, for every event which has multiple "paths" to enable it (i.e. multiple possible dependency sets), we split the event into new events, each labeled by a different possible dependency set. And since branched events may depend on other branched events, we do so recursively. In the resulting structure, rather than sets of events, we have sets of events each labeled by the "path" we took to get to them. From the standpoint of package management, not only does this make perfect sense, but it captures additional useful information. Library \(a\) may link against library \(b\) or \(c\), each of which provide the same API-surface, but which have subtle differences in behavior. So while \(a\) depends "equally" on either \(b\) or \(c\), the resulting products, \(a_b\) and \(a_c\) are not guaranteed to be the same thing. It is precisely this distinction which is captured by taking the idempotent distributive lattice completion.
+The essential effect of applying \(\Mcc\) is that, for every event which has multiple "paths" to enable it (i.e. multiple possible dependency sets), we split the event into new events, each labeled by a different possible dependency set. And since branched events may depend on other branched events, we do so recursively. In the resulting structure, rather than sets of events, we have sets of events each labeled by the "path" we took to get to them. From the standpoint of package management, not only does this make perfect sense, but it captures additional useful information. Library \(a\) may link against library \(b\) or \(c\), each of which provide the same API-surface, but which have subtle differences in behavior. So while \(a\) depends "equally" on either \(b\) or \(c\), the resulting products, \(a_b\) and \(a_c\) are not guaranteed to be the same thing. It is precisely this distinction which is captured by taking the idempotent distributive lattice completion.
 
-\textbf{Aside}: In the above subscript "shorthand", every node becomes a single event, labeled by the set of (labeled) events below it, and soforth. In any nontrivial chain, one then gets subscripts of subscripts of subscripts. Representing this computationally seems a bit of a chore. If we took each label and turned it into a hash, and then when taking sets of labels instead took hashes of their hashes, etc, then (with high probability) we could represent the same information in constant space rather than space geometric in the height of our poset. This structure, with nodes recursively labeled by the hashes of the nodes below them, such that all "path" information is, to high probability, represented in a single hash at each node, is precisely what is known in computer science as a \textbf{Merkle tree}. The idempotent distributive lattice completion, \(\Mcc\) is then, in a sense, the \textit{non-probabilistic Merkle transformation} of a poset, and provides a formal description of what it means when we take an existing data structure and "turn it into a Merkle tree."
+In this subscript "shorthand", every node becomes a single event, labeled by the set of (labeled) events below it, and soforth. In any nontrivial chain, one then gets subscripts of subscripts of subscripts. Representing this computationally seems a bit of a chore. If we took each label and turned it into a hash, and then when taking sets of labels instead took hashes of their hashes, etc, then (with high probability) we could represent the same information in constant space rather than space geometric in the height of our poset. This structure, with nodes recursively labeled by the hashes of the nodes below them, such that all "path" information is, to high probability, represented in a single hash at each node, is precisely what is known in computer science as a \textbf{Merkle tree}. The idempotent distributive lattice completion, \(\Mcc\) is then, in a sense, the \textit{non-probabilistic Merkle transformation} of a poset, and provides a formal description of what it means when we take an existing data structure and "turn it into a Merkle tree."
 
 % merkle used in dist db, dvcs like git, blockchain
+
+
+% union? intersection ? we have choice by splitting but we can't say A OR B properly still?
+
+\subsection{Covering Relations in Dependency Structures}
+
+In a DSC, some events are in a sense "universally more powerful" than other events, in that they enable at least all the things enabled by the events they cover. We say an event is a "higher version" of another event if for possible dependency set of every event containing the lower event, there is also a possible dependency set for that event which differs only in that it contains the higher event instead. 
+
+\begin{definition}
+A \textbf{version parameterization} of a DSC is a partial endofunction on events, from lower to higher, satisfying the above criteria; i.e. where for every possible dependency set of every event, there is another possible dependency set of that event where the lower versions have been substituted for higher versions. Further, we require idempotency -- i.e. that no higher event is itself a lower event of something else.
+\end{definition}
+
+Versioning parameterizations on DSCs in turn give rise to related structures on their reachable dependency posets. Since a reachable dependency poset is complete under joins, for every two event sets differing only in versions of some events, we can take the node corresponding to the union of their event sets. This yields a idempotent monotone endofunction on nodes of the reachable dependency poset, sending ("contracting") the lower and higher event sets both to their corresponding union, which we term a \textbf{poset version parameterization} . 
+
+\begin{lemma}
+Poset version parameterizations preserve existing meets and joins.
+\end{lemma}
+\begin{proof}
+First we consider meets. If two sets had a meet before, and one is now "contracted" to a higher version, this may introduce new elements in the intersection only on the condition that these elements were also in the second set. But that would mean that the elements of the second set would also be contracted in the same way, as would the elements in the intersection itself.
+
+Next, we consider joins. If two sets had a join before, and one was contracted to a higher version, then this would introduce new elements in the union. But those elements are the same element which are introduced by contracting the union directly.
+\end{proof}
+
+Since poset version parameterizations preserve existing meets and joins, they are certainly distributive morphisms, and thus are acted on by \(\Mcc\). 
+
+\begin{theorem}
+Given a DSC \((E,D)\) and a version parameterization with an induced poset version parameterization \(p\), then \(\Mcc(p)\) is a nucleus on \(\Mcc(rdp(E,D))\).
+\end{theorem}
+\begin{proof}
+First we consider meet preservation. Since we know that \(p\) preserves meets, we only need observe that the action of \(\Mcc\) on morphisms preserves meet-preservation. This follows from the fact that \(\Mcc\) itself preserves meets.
+
+%TODO check, spell out more.
+
+Next, we consider contractivity. We already defined \(p\) to be contractive. So now we only need observe that \(\Mcc\) preserves contractivity. For this to fail, it would need to extend a morphism so that some element was mapped to something below itself. But since contractivity is preserved for the basis join-irreducible elements, it must be preserved for all elements.
+
+Finally, we consider idempotence. Again, this is given by idempotence of \(p\) combined with \(\Mcc\) preserving idempotence of join-irreducible elements.
+\end{proof}
+
+\subsection{The Modal Logic of Versioning Parameterizations}
+It is part of the basic theory of Heyting algebras that they possess an internal intuitionistic logic. Here we sketch how it works in our particular case.
+
+Given a DSC \((E,D)\), we construct a language consisting of atoms given by join-irreducible elements of the reachable dependency poset, completed under the standard logical connectives. Every formula in this language corresponds to a particular node in the Merkle-lattice of our DSC, \(\Mcc(rdp(E,D))\).  Conjunction corresponds to join, disjunction to meet, and implication to the relative pseudo-complement. This is a logic of reachable states of our system, and their traces, and describes all possible states of the system as conjunctions of join-irreducible states.
+
+
+However, it is somewhat unsatisfactory. While it can describe all combinations of states in the system (as conjunctions of join-irreducible states), it cannot describe propositions \textit{about} states in the system. In particular, the disjunction operator does not correspond to what we would like out of a logical "or". Given two event sets, it captures the maximal event set from which either is reachable. However, it does not capture that one or the other should be reached.
+
+This can be solved by another level of indirection. In a sense, by capturing path information through the Merkle transformation, we "squeezed out" the nondeterminism from our model. Now, we can put it back in, but more uniformly under our control. To do so, we take the downsets of our Merkle-lattice, yielding in a sense its "or-completion". Now, each node in  \(\O(\Mcc(rdp(E,D))\)) consists of a downward-closed set of nodes in the Merkle-lattice. The maxima of these sets can be interpreted as the nondeterministic collection of possible answers to our proposition. Joins of these sets correspond, as desired, to logical "or". However, we must now recover logical "and". 
+
+[TODO -- ALSO HOW DOES IMPLICATION WORK? IS THIS DONE ANYWHERE?]
+
+% The modal logic of versioning parameterizations
+
+
+
 
 
 
