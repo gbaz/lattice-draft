@@ -1,0 +1,137 @@
+\documentclass[hoptionsi,review,format=sigplan]{acmart}
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+
+\newtheorem*{remark}{Remark}
+
+\newtheorem*{corollary}{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+%SetFonts
+
+%SetFonts
+
+%------------------------------------------------
+%            Symbols in "mathcal"
+%------------------------------------------------
+\newcommand{\Mcc}{\mathcal{M}}
+\newcommand{\Wc}{\mathcal{W}}
+\newcommand{\Oc}{\mathcal{O}}
+\newcommand{\Pc}{\mathcal{P}}
+\newcommand{\Jc}{\mathcal{J}}
+\newcommand{\Cc}{\mathcal{C}}
+
+
+\title[Structure of Concurrency and Dependency]{The Topological and Logical Structure of Concurrency and Dependency}
+\author{Gershom Bazerman}
+\affiliation{Awake Security}
+\author{Raymond Puzio}
+\affiliation{Albert Einstein Institute}
+
+
+\begin{abstract}
+It is widely recognized as desirable to give a mathematical semantics to specifications of concurrent computations. But the purpose of a semantics is not just to exist, but to be useful in further analyzing the properties of the programs they provide models of. So it is desirable in particular to give a semantics that has familiar logical properties to facilitate reasoning, but also tractable topological properties, so that the weight of modern mathematical analysis may be brought to bear on teasing out important structural aspects. This paper makes a number of related contributions in this regard. First, it relates the specification of branching dependency structures, which exist in fields from knowledge-representation to package management, to the specification of semantics of concurrent computation. Second, it introduces a new order-theoretic construction -- the extension of the Bruns-Lakser completion to posets. It then makes use of this as a key ingredient in associating to dependency structures associated locales -- equipped with both topological and logical properties. It then provides an example of how this interplay of properties can be of use -- using topological properties of the dependency structure to equip internal logics of associated locales with a modality representing contraction relations. Finally, it discusses how such constructions may relate to important questions in complexity theory regarding SAT-solvers. Along the way, we will see how this approach relates to familiar objects such as package version policies, Merkle-trees, the nix operating system, and distributed version control tooling like git.
+\end{abstract}
+
+\section{Introduction}
+This project began with seeking to understand the mathematical structure and logic of software package repositories. Such repositories contain tens of thousands of packages, with complex webs of interlinking dependencies, represented as expressions in propositional logic, containing not only branching choices, but also a notion of "compatibility ranges" and a notion of conflict. The structures we developed for modeling this turned out to be extremely similar to work on the semantics of concurrent computation -- and for good reason! The problem of branching dependency specification is exactly the problem of concurrent computation, just "turned on its head." Semantics of concurrent computation, at base, consist of a collection of states, and certain allowable transitions between them, which may be simultaneous, and which may be nondeterministic. A dependency specification, such as given by a package repository, also has a collection of states (the collection of installed packages), and also has a collection of allowable transitions (one may only install a new package when all dependencies are satisfied). Furthermore, concurrency takes the form of distinguishing when two independent packages may be built simultaneously. And finally, in both cases, we have a notion of "incompatibility" -- the former, in terms of contention for a shared resource, and the latter, in terms of e.g. disallowing that two linked packages expose the same required symbol with different definitions. The difference is then largely in the questions asked about such structures. With concurrent semantics, the whole structure is the "program" and the typical questions asked are how such things compose. With dependency structures, a "program" is what we think of as a "build plan" -- a single trace through the structure to a particular end state, and the questions asked are about optimality, reachability, etc. Our approach is inspired by the latter way of thinking, but we think it sheds light on many related issues as well. In particular, we see that "inside" any single concurrent program, we can examine not only its state space, but also a related internal logic -- the logic of dependency specifications. This lends itself to fine-grained intensional analysis, exploiting the interplay.
+
+In section 2, we introduce the basic elements and tools of our analysis -- dependency structures with choice, and their related "trace" structures, reachable dependency posets. Section 3 introduces the extended Bruns-Lakser completion, which is an independent order-theoretical result of general mathematical interest. We then discuss how reachable dependency posets, through the lens of Bruns-Lakser, produce a very general formal mathematical notion of what a "Merkle" structure is. Section 4 discusses two intuitionistic logics that can be built over this completion -- one an immediate "logic of paths", and one passing through the free distributive lattice over a poset to yield a "logic of requirements." Section 5 relates the topological and logical aspects of this investigation by examining how certain "covering" relations in dependency structures give rise to modalities in the associated logics discussed. Section 6 presents some preliminary investigations on how this approach may shed light on the innate topological structure of SAT problems, with regards to the difficulty they present to SAT solvers. We then conclude with a discussion on related and future work.
+
+
+
+
+\section{Dependency Structures with Choice}
+We now shift tack entirely and examine a common object in computer science -- a collection of events, each of which is equipped with some predicate regarding other events which must first occur. 
+
+\begin{definition}
+A \textbf{Pre-Dependency Structure with Choice} is a pair \((E, D : E \rightarrow \Pc(\Pc(E)))\) where \(E\) is a finite set of events, and \(D\) is a mapping from \(E\) to its double powerset, to be interpreted as mapping each event to a set of alternative dependency requirements -- i.e. to a predicate in disjunctive normal form ranging over variables drawn from \(E\). 
+\end{definition}
+
+\begin{definition}
+A \textbf{Dependency Structure with Choice} (DSC) is a pre-DSC with \(D\) satisfying  appropriate conditions of transitive closure and cycle-freeness. We define \(X\) as a \textbf{possible dependency set} of \(e\) if \(X \in D(e)\). A pre-DSC is a DSC if for every element \(e'\) in every possible dependency set \(X\) there is a possible dependency set \(Y\) of \(e'\) such that \(Y \subseteq X\), and no possible dependency set of any element contains the element itself. Pre-DSCs may be completed into DSCs by repeatedly taking transitive completion of possible dependency sets (with regards to each transitive possible dependency set) and then deleting cyclic sets until a fixpoint is reached.
+\end{definition}
+
+% define complete event set here.
+% completeness and reachablility are equivalent.
+% define reachable event.
+
+
+DSCs are richer than the standard notion of a dependency tree or dependency graph. In such structures, a node \(a\) with edges to \(b\) and \(c\) exhibits a dependency on both \(b\) and \(c\). There is no way, however, to express a dependency on either \(b\) or \(c\). A domain-theoretic account of such structures is given by \textit{pomsets}, introduced by Vaughn Pratt. Pomsets are a special instance of a broader class of structures, known as \textit{event structures}, introduced by Nielson, Plotkin and Winskel, and used in the domain-theoretic semantics of concurrent computation and concurrent games. Such structures have not only a (choice-free, transitively normalized) dependency relation, but in addition a conflict structure which indicates incompatible collections of events (typically presented as a collection of consistent sets which carves out only compatible collections of events). Finally, there are so-called \textit{general event structures}, which extend event structures with a notion of choice in roughly the same fashion as DSCs (i.e. by moving from a partial ordering relation into a relation between elements and powersets). Their theory is less well behaved and understood, and its study is an area of ongoing work. Intuitively (i.e. not necessarily formally), in a lattice of expressive power, DSCs sit above pomsets, "side by side" with event structures, and below general event structures.  One hope of the present is work is that it might be usefully extended in some fashion with conflicts, leading among other things to a further understanding of general event structures
+
+While the motivating example of event structures was in understanding things such as Petri nets and communicating sequential processes, our motivating example is in understanding the dependency structure of package collections, either within a language ecosystem, or within, e.g. the package repository for a linux distribution. It is straightforward to see the connection between the two. The installation of a package can be seen as an event, and the packages required to install that package are the event dependencies. Furthermore, some collections of packages may be incompatible, due to conflicts in usage of resources such as global namespace. So while the difference in motivation informs our thinking, the phenomena under examination are very similar from the a sufficient height of abstraction. A further set of examples which the present work sheds modest light on are the special case of dependency structures without choice -- i.e., pomsets -- used in distributed version control systems such as git, and in blockchain-style distributed ledgers.
+
+\subsection{Reachable Dependencies Posets of a DSC and the Merkle Transformation}
+
+\begin{definition} The \textbf{reachable dependency poset} of a DSC is the result of an operation, \(rdp\), which sends DSCs to bounded posets (i.e. posets with top and bottom elements) by the following two-step procedure:  We take as elements all collections of events, i.e. \(\Pc(E)\), and impose the least order relation such that one collection of events, \(X\), is above another, \(Y\), if \(Y \subset X\) and for every element of \(X\), there is a possible dependency set contained in \(Y\).  Finally, we restrict ourselves to only those elements of the poset which lie above the empty event set. 
+\end{definition}
+
+It follows that for any DSC \((E,D)\), \(rdp((E,D))\)  is a subposet of \(\Pc(E)\), and has all joins (i.e. unions). Viewed as a graph, nodes of a reachable dependency poset correspond to sets of events which are complete (i.e. for which each event in the set we can find other events in the set which satisfy one of its possible dependency sets), and edges correspond to linear accretion of event sets over time by addition of subsequent events. Consequently, a reachable dependency poset may also be seen as generated by considering all possible dependency sets of all events, augmenting each with the event itself, and then, under the inclusion ordering, augmenting the result with the empty set and in addition all possible joins. Informally, a reachable dependency set is generated by asking "for each event, what are the basic (reachable) event sets which contain it," and then completing those by the empty set and all unions of this basis.
+
+Intuitively, this looks similar to a topological space, with events as points, and reachable event sets as open covers. However, for a topological space, not only must the union of opens remain open (as is the case with reachable event sets), but the intersection of opens must also be open. Consider an event \(a\), which depends on either \(b\) or \(c\). \(\{a,b\}\) and  \(\{a,c\}\) are reachable event sets, but their intersection, \(\{a\}\), is not.
+
+To the vaguely formed question "how do we make reachable dependency posets topological" we propose a precise answer: application of the idempotent distributive lattice completion. This is to say, we take the composite \(\Mcc(rdp(E,D))\). As already discussed, the irreducible elements of a reachable dependency poset are those sets which are generated by the possible dependency sets of individual events -- i.e. that have an event which is shared by no complete dependency set below them. In the above example, the irreducible elements, i.e. \(\Jc(rdp(E,D))\), are \(\{b\}\), \(\{c\}\), \(\{a,b\}\), and \(\{a,c\}\). Hence the application of \(\Oc\) yields the four sets \(\{\{b\}\}\), \(\{\{c\}\}\), \(\{\{b\},\{a,b\}\}\), and \(\{\{c\},\{a,c\}\}\), but also \(\{\}\), \(\{\{b\},\{c\},\{b,c\}\}\) and \(\{\{b\},\{c\},\{a,b\},\{a,c\}\}\). (see figure n.)
+
+
+%TODO add illustration
+
+
+The essential effect of applying \(\Mcc\) is that, for every event which has multiple "paths" to enable it (i.e. multiple possible dependency sets), we split the event into new events, each labeled by a different possible dependency set. And since branched events may depend on other branched events, we do so recursively. In the resulting structure, rather than sets of events, we have sets of events each labeled by the "path" we took to get to them. From the standpoint of package management, not only does this make perfect sense, but it captures additional useful information. Library \(a\) may link against library \(b\) or \(c\), each of which provide the same API-surface, but which have subtle differences in behavior. So while \(a\) depends "equally" on either \(b\) or \(c\), the resulting products, \(a_b\) and \(a_c\) are not guaranteed to be the same thing. It is precisely this distinction which is captured by taking the idempotent distributive lattice completion.
+
+In this subscript "shorthand", every node becomes a single event, labeled by the set of (labeled) events below it, and soforth. In any nontrivial chain, one then gets subscripts of subscripts of subscripts. Representing this computationally seems a bit of a chore. If we took each label and turned it into a hash, and then when taking sets of labels instead took hashes of their hashes, etc, then (with high probability) we could represent the same information in constant space rather than space geometric in the height of our poset. This structure, with nodes recursively labeled by the hashes of the nodes below them, such that all "path" information is, to high probability, represented in a single hash at each node, is precisely what is known in computer science as a \textbf{Merkle tree}. The idempotent distributive lattice completion, \(\Mcc\) is then, in a sense, the \textit{non-probabilistic Merkle transformation} of a poset, and provides a formal description of what it means when we take an existing data structure and "turn it into a Merkle tree."
+
+% merkle used in dist db, dvcs like git, blockchain
+
+
+% union? intersection ? we have choice by splitting but we can't say A OR B properly still?
+
+\subsection{Covering Relations in Dependency Structures}
+
+In a DSC, some events are in a sense "universally more powerful" than other events, in that they enable at least all the things enabled by the events they cover. We say an event is a "higher version" of another event if for possible dependency set of every event containing the lower event, there is also a possible dependency set for that event which differs only in that it contains the higher event instead. 
+
+\begin{definition}
+A \textbf{version parameterization} of a DSC is a partial endofunction on events, from lower to higher, satisfying the above criteria; i.e. where for every possible dependency set of every event, there is another possible dependency set of that event where the lower versions have been substituted for higher versions. Further, we require idempotency -- i.e. that no higher event is itself a lower event of something else.
+\end{definition}
+
+Versioning parameterizations on DSCs in turn give rise to related structures on their reachable dependency posets. Since a reachable dependency poset is complete under joins, for every two event sets differing only in versions of some events, we can take the node corresponding to the union of their event sets. This yields a idempotent monotone endofunction on nodes of the reachable dependency poset, sending ("contracting") the lower and higher event sets both to their corresponding union, which we term a \textbf{poset version parameterization} . 
+
+\begin{lemma}
+Poset version parameterizations preserve existing meets and joins.
+\end{lemma}
+\begin{proof}
+First we consider meets. If two sets had a meet before, and one is now "contracted" to a higher version, this may introduce new elements in the intersection only on the condition that these elements were also in the second set. But that would mean that the elements of the second set would also be contracted in the same way, as would the elements in the intersection itself.
+
+Next, we consider joins. If two sets had a join before, and one was contracted to a higher version, then this would introduce new elements in the union. But those elements are the same element which are introduced by contracting the union directly.
+\end{proof}
+
+Since poset version parameterizations preserve existing meets and joins, they are certainly distributive morphisms, and thus are acted on by \(\Mcc\). 
+
+\begin{theorem}
+Given a DSC \((E,D)\) and a version parameterization with an induced poset version parameterization \(p\), then \(\Mcc(p)\) is a nucleus on \(\Mcc(rdp(E,D))\).
+\end{theorem}
+\begin{proof}
+First we consider meet preservation. Since we know that \(p\) preserves meets, we only need observe that the action of \(\Mcc\) on morphisms preserves meet-preservation. This follows from the fact that \(\Mcc\) itself preserves meets.
+
+%TODO check, spell out more.
+
+Next, we consider contractivity. We already defined \(p\) to be contractive. So now we only need observe that \(\Mcc\) preserves contractivity. For this to fail, it would need to extend a morphism so that some element was mapped to something below itself. But since contractivity is preserved for the basis join-irreducible elements, it must be preserved for all elements.
+
+Finally, we consider idempotence. Again, this is given by idempotence of \(p\) combined with \(\Mcc\) preserving idempotence of join-irreducible elements.
+\end{proof}
+
+\subsection{The Modal Logic of Versioning Parameterizations}
+It is part of the basic theory of Heyting algebras that they possess an internal intuitionistic logic. Here we sketch how it works in our particular case.
+
+Given a DSC \((E,D)\), we construct a language consisting of atoms given by join-irreducible elements of the reachable dependency poset (which may be thought of, as above, as events subscripted with their dependency trace), completed under the standard logical connectives. Every formula in this language corresponds to a particular node in the Merkle-lattice of our DSC, \(\Mcc(rdp(E,D))\).  Conjunction corresponds to meet, disjunction to join, and implication to the relative pseudo-complement. This is a logic of reachable states of our system, and their traces, which describes all possible states of the system as disjunctions of join-irreducible states. Given two event sets, considered as reachable states, disjunction gives the set of events that have occurred in either state. Conjunction gives the set of events which have occurred in both states.
+
+This is a logic of reachable states of our system, and their traces, which describes all possible states of the system as disjunctions of join-irreducible states. Given two event sets, disjunction gives to the event set which has elements contained in either. Similarly, conjunction gives to the event set of elements contained in both.  It is important to note that this is different from a logic of propositions \textit{about} states in the system, or requirements. A a logical "or"  would express that we're asking for one or the other event set as such, unlike the disjunction given here. Similarly, a logical "and" would express that we are requiring all events in both sets (i.e. what disjunction actually provides).
+
+Some further mathematical constructions are required to build back up to the logic we'd really like.
+
