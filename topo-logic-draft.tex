@@ -5,6 +5,7 @@
 								% TeX will automatically convert eps --> pdf in pdflatex
 \usepackage{amssymb}
 
+\usepackage{mathtools}
 \newtheorem*{remark}{Remark}
 
 
@@ -42,6 +43,11 @@
 \newcommand{\bor}{\mathbin{|}}
 \newcommand{\Dia}{\diamondsuit}
 
+\newcommand{\Mf}{\mathfrak{m}}
+\newcommand{\Sf}{\mathfrak{s}}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
 \title[Concurrency and Dependency via Distributive Lattices]{The Topological and Logical Structure of Concurrency and Dependency via Distributive Lattices}
 \author{Gershom Bazerman}
@@ -246,12 +252,21 @@ The mapping from an actual repository to a DCS is incomplete in that it throws a
 A \textbf{version parameterization} of a DSC is an idempotent endofunction on events, from lower to higher, satisfying the above criteria; i.e. where for every possible dependency set of every event, there is another possible dependency set of that event where the lower versions have been substituted for higher versions. Idempotency here translates into the condition that no higher event is itself a lower event of something else.
 \end{definition}
 
-Versioning parameterizations on DSCs in turn give rise to related structures on their reachable dependency posets. Since a reachable dependency poset is complete under joins, for every two event sets differing only in versions of some events, we can take the node corresponding to the union of their event sets. This yields a idempotent monotone endofunction on nodes of the reachable dependency poset, sending ("contracting") the lower and higher event sets both to their corresponding union, which we term a \textbf{poset version parameterization} .
+%TODO use symbols
+
+Versioning parameterizations on DSCs in turn give rise to related structures on their reachable dependency posets. Since a reachable dependency poset is complete under joins, for every two event sets differing only in versions of some events, we can take the node corresponding to the union of their event sets. This yields a  endofunction on nodes of the reachable dependency poset, sending ("contracting") the lower and higher event sets both to their corresponding union.
+
+\begin{definition}
+A \textbf{poset version parameterization} is an idempotent monotone endofunction on a poset which preserves existing meets and joins.
+\end{definition}
 
 \begin{lemma}
-Poset version parameterizations preserve existing meets and joins.
+The endofunction on a reachable dependency poset induced by a version parametrization on its underlying DSC is a poset version parameterization.
 \end{lemma}
+
 \begin{proof}
+Clearly this function is idempotent and monotone by construction. It remains to show it preserves meets and joins.
+
 First we consider meets. If two sets had a meet before, and one is now "contracted" to a higher version, this may introduce new elements in the intersection only on the condition that these elements were also in the second set. But that would mean that the elements of the second set would also be contracted in the same way, as would the elements in the intersection itself.
 
 Next, we consider joins. If two sets had a join before, and one was contracted to a higher version, then this would introduce new elements in the union. But those elements are the same element which are introduced by contracting the union directly.
@@ -312,20 +327,59 @@ Given a DSC \((E,D)\) and a version parameterization with an induced poset versi
 We have already established that \(\Mcc\) yields a contractive endofunction on a distributive lattice (and more). Since taking up-sets is functorial, we know that this in turn yields a contractive endo-function on the compound. Furthermore, since the up-set functor runs from all posets to distributive lattices, it lifts order-preserving morphisms of posets into meet and join preserving morphisms of distributive lattices. Hence, the induced contractive endofunction preserves both meets and joins, and is a nucleus.
 \end{proof}
 
-This in turn induces a modality, as above, but now on the logic not only of event sets, but of event equations. Thus we get a simple type theory of package dependencies with an internal "version policy" modality that obeys the usual algebraic identities, and lets us treat contraction along the version policy as a monadic effect. Package version policies have been a subject of some debate in the applied world. But as we now see, all told, a package version policy in a dependency structure is just a certain type of monad in the free distributive lattice over the join irreducibles of the associated poset.
+This in turn induces a modality, as above, but now on the logic not only of event sets, but of event equations. Thus we get a simple type theory of package dependencies with an internal "version policy" modality that obeys the usual algebraic identities, and lets us treat contraction along the version policy as a monadic effect. Package version policies have been a subject of some debate in the applied world. But as we now see, all told, a package version policy in a dependency structure is just a certain type of monad in the free distributive lattice over the join-irreducibles of the associated poset.
 
 % Free Distributive Lattices and Nuclei
 
-\section{Solutions to Dependency Problems}
+\section{Solutions to Dependency Problems, and their Combinatorial Properties}
 In future work, we will discuss a general theory of incompatibilities. For now, we define a general notion of a dependency problem.
 
 \begin{definition}
-A dependency problem in a DSC \((E,D)\) is the pair of a formula \(\phi\) in \(\UMc(E,D)\) and a monotone increasing objective function of type \(\Pc(E) \rightarrow \mathbb{R}\). A solution to such a problem is an event set which satisfies the formula and minimizes the objective function.
+A dependency problem in a DSC \((E,D)\) is the pair of a formula \(\phi\) in \(\UMc(E,D)\) and a monotone increasing (i.e. growing as further elements are added to the source set) objective function of type \(\Pc(E) \rightarrow \mathbb{R}\). A solution to such a problem is an event set which satisfies the formula and minimizes the objective function.
 \end{definition}
 
-Without further constraints on the objective function, then clearly there is no more efficient method of solving a dependency problem than brute force search over all event sets which satisfy the formula. But that does not mean there is nothing to be said. Rather, it directs us to focus on the efficiency of enumerating such sets, and also the sum total quantity of such sets.
+This naturally encodes many problems. For example, it allows us to calculate the minimal dependencies needed to reach a certain state. Further, if we associate a cost function which counts the number of incompatibilities or conflicts in a given event set, then a conflict-free solution is possible when a minimal solution has a cost of zero.
 
-% Formulae should correspond 1-1 with cuts in hasse diagrams.
+Even without further constraints on the objective function, solving a dependency problem does not mean undertaking a brute force search over all event sets which satisfy the formula. In particular, since the objective function is monotone, we need only examine the minimal event sets which satisfy it. These form a maximal  antichain -- i.e. they are unordered with relation to one another, but every other point on the lattice is ordered with regards to at least one such set. The former property follows immediately from monotonicity. The latter comes from the fact that the top element in the lattice satisfies all formulae in our language (since it has no notion of negation), and hence every set which does not satisfy \(\phi\) is ordered in relation to at least one set which does.
+
+This encourages us to focus on the efficiency of enumerating maximal antichains, and in particular the maximum size of an antichain within a poset -- known as the width of the poset. The downsets over a discrete set have the special property that maximal antichains are one-to-one with formulae in that set's elements, modulo the equational rules of first order logic. This follows from the fact that if a formula specified two ordered elements, one would be redundant with regards to the other and further, every element either does or does not satisfy a given formula. In the downsets over a more structured poset, cuts remain one-to-one with formulae -- but modulo not only the standard rules of logic, but also those relations induced by the underlying poset. Hence, in general, the maximum width of the collection of downsets over a poset is the same as the maximum number of disjuncts in a formula over the elements of the poset presented in disjunctive normal form, and modulo appropriate relations. In fact, we have the following lemma, which is straightforward, but we have not seen recorded in existing literature:
+
+\begin{lemma}
+The collection of all antichains in the downsets of a finite poset \(P\), under the inclusion ordering, corresponds to the free distributive lattice over \(P\).
+\end{lemma}
+\begin{proof}
+We have already defined the free distributive lattice as the up-sets of the downsets. Hence we need only show that up-sets are one-to-one with maximal antichains. In a finite lattice, every up-set corresponds to a unique set of basis elements, which are unordered with respect to one another, and hence form an antichain. Conversely, every antichain thus generates a distinct up-set.
+\end{proof}
+
+By Sperner's Theorem, first published in 1928, the powerset of a set with \(n\) elements, under inclusion ordering, has a width of \(\binom{n}{\floor{n/2}}\), which we denote \(\Sf(n)\). In the other extreme, when all elements of the underlying poset are strictly ordered, then all elements of the resultant downset are also strictly ordered, and hence the width is 1. This yields a key insight -- the complexity of solving a dependency problem is not strictly a function of the quantity of events -- rather, it is jointly determined by the quantity of events and the degree of dependency induced by their underlying topological structure. The general relationship is determined by the following theorem:
+
+\begin{theorem}
+For a finite poset \(P\) with \(n\) elements, the width of its free distributive lattice may be calculated as \(\Sf(n - \Mf(P))\), where \(\Mf(P)\) denotes the number of nonidempotent elements in the maximal poset version parameterization of \(P\).
+\end{theorem}
+
+\begin{proof}
+
+\end{proof}
+
+\begin{lemma}
+Every poset has a unique maximal poset version parameterization, which acts as the identity on elements iff they are nondegenerate.
+\end{lemma}
+
+
+% show that pvps have a maximal one. further, show that it consists of nondegenerate join irreducible elements.
+
+% Nondegenerate join irreducible elements. i.e. ones which do not factor through something they are greater than.
+
+
+% https://en.wikipedia.org/wiki/Sperner%27s_theorem
+% http://oeis.org/A001405
+% https://www.ams.org/journals/bull/1988-19-02/S0273-0979-1988-15725-4/S0273-0979-1988-15725-4.pdf
+% Alexander -- combinatorics of finite sets
+% http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.655.7131&rep=rep1&type=pdf
+
+
+
+
 % Prove that for a modality, the difficulty of solving <>(phi) <= difficulty of solving phi.
 % for a discrete set, difficulty of solving is bounded by double exponential
 % equipping set with structure -- degenerate case is linear. Question: what formula if any relates structure to cost
@@ -337,6 +391,8 @@ Without further constraints on the objective function, then clearly there is no 
 % In fact, since \(\Dia\) commutes with meets (i.e. \(\Dia(x \band y) = \Dia{x} \band \Dia{y}\) and  \(\Dia(x \bor y) = \Dia{x} \bor \Dia{y}\))
 % Look at paper ray sent on physics -- sorkin, penrose.
 % Structure of mathematical proofs, knowledge
+
+% Directed topology
 
 
 \end{document}
