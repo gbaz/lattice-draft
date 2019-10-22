@@ -8,9 +8,8 @@
 \usepackage{xypic}
 \usepackage{cancel}
 \usepackage{mathtools}
+\usepackage{tikz-cd}
 \newtheorem*{remark}{Remark}
-
-
 
 
 %SetFonts
@@ -47,7 +46,7 @@
 
 \title{Topological Aspects of Dependency Structures}
 \subtitle{CUNY Topology Seminar, October 22, 2019}
-\author{Gershom Bazerman, Awake Security\linebreak(jww Raymond Puzio, Albert Einstein Institute)}
+\author{Gershom Bazerman, Awake Security \linebreak(jww Raymond Puzio, Albert Einstein Institute)}
 
 \begin{document}
 \begin{frame}
@@ -78,17 +77,17 @@ Two key questions: \textit{compositionality} (external, gros), and \textit{reach
 Model dependency, conflict, choice. Hard to reason about!
 \end{block}
 \begin{block}{Event Structures (Winskel)}
-Model dependency, conflict, textbf{not} choice. Good properties, form a domain! Correspond to safe Petri nets, CCS.
+Model dependency, conflict, \textbf{not} choice. Good properties, form a domain! Correspond to safe Petri nets, CCS.
 \end{block}
 \begin{block}{pomsets (partially ordered multisets) (Pratt)}
-Model dependency, textbf{not} conflict, textbf{not} choice. Compose beautifully. Relate to Kleene algebras.
+Model dependency, \textbf{not} conflict, \textbf{not} choice. Compose beautifully. Relate to Kleene algebras.
 \end{block}
 \end{frame}
 
 \begin{frame}
 \frametitle{Our Approach}
 \begin{block}{Dependency Structures with Choice (B., Puzio)}
-Model dependency, textbf{not} conflict, choice. Nice properties. Relate to locales and constructive logic. Haven't studied composition.
+Model dependency, \textbf{not} conflict, choice. Nice properties. Relate to locales and constructive logic. Haven't studied composition.
 \end{block}
 \begin{block}{Dependency Structures with Choice and Conflict (B., Puzio)}
 Model dependency, conflict, choice. Future work! Should allow us to relate GES to Directed Topology.
@@ -98,16 +97,20 @@ Model dependency, conflict, choice. Future work! Should allow us to relate GES t
 \begin{frame}
 \frametitle{Pre-DSCs}
 \begin{definition}
-A \textbf{Pre-Dependency Structure with Choice} is a pair \((E, D : E \rightarrow \Pc(\Pc(E)))\) where \(E\) is a finite set of events, and \(D\) is a non-nullary mapping from \(E\) to its double powerset, to be interpreted as mapping each event to a set of alternative dependency requirements -- i.e. to a predicate in disjunctive normal form ranging over variables drawn from \(E\).
-\end{definition}
+A \textbf{Pre-Dependency Structure with Choice} is a pair \((E, D : E \rightarrow \Pc(\Pc(E)))\) \end{definition}
+\begin{itemize}
+\item \(E\) is thought of as a finite set of events.
+\item \(D\) is thought of as mapping each event to a set of alternative dependency requirements -- i.e. to a predicate in disjunctive normal form.
+\end{itemize}
 \end{frame}
 
 
 \begin{frame}
 \frametitle{DSCs}
 \begin{definition}
-A \textbf{Dependency Structure with Choice} (DSC) is a pre-DSC with \(D\) satisfying  appropriate conditions of transitive closure and cycle-freeness. We define \(X\) as a \textbf{possible dependency set} of \(e\) if \(X \in D(e)\). We call an event set \(X\) a \textbf{complete event sent} if for every element \(e\) there is a possible dependency set \(Y\) of \(e\) such that \(Y \subseteq X\). A pre-DSC is a DSC if every possible dependency set of every element is complete, and no possible dependency set of any element contains the element itself. Pre-DSCs may be completed into DSCs by a transitive closure operation.
+A \textbf{Dependency Structure with Choice} (DSC) is a pre-DSC with \(D\) satisfying appropriate conditions of transitive closure and cycle-freeness. 
 \end{definition}
+\(X\) is a \textbf{possible dependency set} of \(e\) if \(X \in D(e)\). An event set \(X\) is a \textbf{complete event sent} if for every element \(e\) there is a possible dependency set \(Y\) of \(e\) such that \(Y \subseteq X\). A pre-DSC is a DSC if every possible dependency set of every element is complete and cycle-free.
 \end{frame}	
 
 \begin{frame}
@@ -150,45 +153,178 @@ Observation: the Birkhoff completion of a reachable dependency poset is not very
 \end{frame}
 
 
-\begin{frame}
+\begin{frame}[fragile]
 \frametitle{Bruns-Lakser}
 An \textbf{admissible set} is a subset \(S\) of a meet-semilattice \(P\) in which for all \(x\), \(x \wedge \bigvee(S) = \bigvee(x \wedge S)\).
 
 \begin{theorem}
-(Bruns-Lakser, MacNeille, Gherke-Van Gool) The partially ordered set of all admissible sets of a meet-semilattice \(P\) is a distributive lattice, \(\BLc(P)\). There exists an injection \(bl : P \rightarrow \BLc(P)\), which preserves all meets and joins of admissible sets. Furthermore, any morphism to a distributive lattice that preserves all meets and joins of admissible sets, \(f : P \rightarrow D\), factors uniquely into the injection \(bl : P \rightarrow \BLc(P)\) followed by a distributive lattice homomorphism \(g : \BLc(P) \rightarrow D\). This construction is known as the distributive envelope, injective hull, or Bruns-Lakser completion.
+(Bruns-Lakser, MacNeille, Gherke-Van Gool) The partially ordered set of all admissible sets of a meet-semilattice \(P\) is a distributive lattice, \(\BLc(P)\). Furthermore, when \(D\) is distributive, and \(f\) preserves joins of admissible sets and all meets:
+
+\begin{equation*}
+\begin{tikzcd}
+\BLc(P) \arrow[r, "!",dashed]            & D \\
+P \arrow[u, hook] \arrow[ru, "f"'] &  
+\end{tikzcd}
+\end{equation*}
 \end{theorem}
+
 \end{frame}
 
-\begin{frame}
+\begin{frame}[fragile]
 \frametitle{BL for posets, finite case}
 
 \begin{theorem}
-(B., Puzio) For a finite poset, the distributive envelope may be constructed as \(\Oc(\Jc(P)))\), with an injection that sends join-irreducible elements to their downsets, and composite elements to the union of their join-irreducible basis. When \(P\) is a meet semilattice, this coincides with the Bruns-Lakser completion.
+(B., Puzio) For a finite poset, the injective hull may be constructed as \(\Oc(\Jc(P)))\), with an injection that sends join-irreducible elements to their downsets, and composite elements to the union of their join-irreducible basis. Furthermore, 
+
+\begin{equation*}
+\begin{tikzcd}
+\BLc(P) \arrow[r, "!",dashed]            & D \\
+P \arrow[u, hook] \arrow[ru, "f"'] &  
+\end{tikzcd}
+\end{equation*}
+
 \end{theorem}
 
-Observation: Extended BL is idempotent (i.e. a genuine completion), and furthermore it is topologically and logically meaningful.
+Corollary: (Finite) distributive lattices are a reflective subcategory of (finite) posets with "distributive" morphisms.
+\end{frame}
+
+\begin{frame}
+\frametitle{Extended BL is idempotent, and meaningful}
+\begin{figure}
+\begin{minipage}[c]{0.4\textwidth}
+\begin{equation*}
+    \xymatrix{& abc \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      \underline{ab} \ar@{-}[d] \ar@{--}[dr] & bc \ar@{-}[dl] \ar@{-}[dr] &
+        \underline{ac} \ar@{-}[d] \ar@{--}[dl] \\
+        \underline{b} & \xcancel{a}  & \underline{c} }         
+%      b \ar@{-}[dr] & \xcancel{a} \ar@{--}[d] & c \ar@{-}[dl] \\
+%       & \emptyset &}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[c]{0.08\textwidth}
+  \begin{equation*}
+    \xymatrix{\ar@2{~>}[r]^{\Mcc} &}
+  \end{equation*}
+\end{minipage}
+\begin{minipage}[c]{0.4\textwidth}
+\begin{equation*}
+    \xymatrix{& a_ba_cbc \ar@{-}[dl] \ar@{-}[dd] \ar@{-}[dr] & \\
+      \mathbf{a_bbc} \ar@{-}[d] \ar@{-}[dr] & &
+        \mathbf{a_cbc} \ar@{-}[d] \ar@{-}[dl]\\
+        \underline{a_bb} \ar@{-}[d] & bc \ar@{-}[dl] \ar@{-}[dd] \ar@{-}[dr] &
+          \underline{a_cc} \ar@{-}[d] \\
+         \underline{b} \ar@{-}[dr] & & \underline{c} \ar@{-}[dl] \\
+      & \mathbf{\emptyset} }
+\end{equation*}
+\end{minipage}
+\end{figure}
+\end{frame}
+
+\section{Locales}
+\begin{frame}
+\frametitle{Definitions}
+A \textbf{Heyting algebra} is a lattice with a unique top and bottom element, and a special "implication" operation called the \textbf{relative pseudo-complement} (\(a \rightarrow b\)) which yields the unique greatest element \(x\) such that \(a \wedge x \le b\). A \textbf{complete Heyting algebra} is a Heyting algebra such that it is also a complete lattice. Finite distributive lattices are one-to-one with finite Heyting algebras.
+
+A \textbf{frame} is a complete Heyting algebra, considered in a category where morphisms preserve finite meets and arbitrary joins. A \textbf{locale} is a frame, but in a category with morphism reversed. \(FinLoc = FinFrm^{op} = FinDLat^{op}\)
+\end{frame}
+
+\begin{frame}
+A \textbf{nucleus} is the algebraic structure on a frame that gives a sublocale. It given as a monotone function on a frame \(j : L \rightarrow L\), satisfying three properties. First: \(j(a \wedge b) = j(a) \wedge j(b)\). Second, \(a \le j(a)\). Finally, \(j(ja) \le j(a)\). These may be summarized as saying that it is (finite) meet-preserving, contractive (in this case, inflationary) and idempotent. An element of \(L\) is said to be \(j\)-closed if \(j(a)=a\). Further, if \(L\) is a frame, then \(L/j\), which consists only of \(j\)-closed elements, is also a frame, and there exists a surjective frame homomorphism \(j^* : L \rightarrow L/j\). 
+
+If we view a frame as a category, a nucleus is just a left-exact idempotent monad; if we view a frame as a decategorified topos, a nucleus is a topology; and if we view a frame as generated by its internal logic, a nucleus gives a "possibility" or "locally true" modal operator on that logic, analogous to the S4 diamond.
+\end{frame}
+
+\begin{frame}
+\frametitle{locales in a nutshell}
+Frames correspond to the "frame of opens" of a topological space. Frames/Locales are "generalized spaces" which may have "too many points, or not enough". Frames "with enough points" are 1-1 with sober spaces. All spaces may be "soberified" as a reflector.  Localic homology and homotopy is relatively underdeveloped. By their connection to Heyting algebras, frames are complete with regards to intuitionistic logic. (A statement is provable in IL iff it is true in all frames). Importantly, they let us relate topologies and logical modalities.
+\end{frame}
+
+\begin{frame}
+\frametitle{The BL-topology}
+\begin{definition}
+The \textbf{Bruns-Lakser topology} on a finite locale is a function generated by the following stepwise procedure. First we consider the join-irreducible elements of the underlying poset of the locale (i.e. the poset of its join-irreducible elements). We term such elements the "double basis" of the locale. For double-basis elements, we define \(bl\) as the identity. For all joins of such elements, \(bl\) is again the identity. And for all meets of all elements thus far enumerated, \(bl\) is again the identity. For all other elements, \(bl\) is the meet of all idempotent elements greater than or equal to it. Since we have explicitly added all necessary meets, the result is necessarily an idempotent.
+\end{definition}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Localic presentations of DSCs}
+
+\begin{lemma}
+The Bruns-Lakser topology a nucleus and further is the least nucelus which preserves the join-irreducible elements of the underlying poset of a finite frame.
+\end{lemma}
+
+\begin{theorem}
+The set of DSCs is one-to-one with the set of finite locales, equipped with the Bruns-Lakser topology.
+\end{theorem}
+
+Question: What morphisms do we need to define to extend this to an equivalence of categories?
+
+\end{frame}
+
+\section{Versioning}
+\begin{frame}
+\begin{definition}
+A \textbf{version parameterization} of a DSC is an idempotent endofunction on events, from lower to higher, where for every possible dependency set of every event, there is another possible dependency set of that event where the lower versions have been substituted for higher versions. Idempotency here translates into the condition that no higher event is itself a lower event of something else.
+
+A \textbf{poset version parameterization} is the induced endofunction on a reachable dependency poset generated by a version parameterization on a DSC
+\end{definition}
+
+
 \end{frame}
 
 
-	\section{Locales}
-	\section{Versioning}
-	\section{Free Distributive Lattices}
-	
-	\frame {
-		\frametitle{Concurrency}
-		\[\frac{-b \pm \sqrt{b^2 - c}}{2a}\]
-	}
-	\frame{
-		\frametitle{Sample Page 2}
-		\framesubtitle{An Example of Lists}
-		\begin{itemize}
-			\item 1
-			\item 2
-			\item 3
-		\end{itemize}
-	}
-	\frame{
-	    \frametitle{Paragraph Content}
-	    This is a paragraph.
-	}
+\begin{frame}
+
+\begin{lemma}
+A \textbf{ponucleus} is an idempotent monotone endofunction on a poset which preserves existing finite meets.
+Every poset version parameterization is a ponucleus that in addition preserves existing joins.
+\end{lemma}
+
+\begin{theorem}
+Given a join-preserving ponucleus \(j\), on a poset \(P\),  \(\Mcc(j)\) is a nucleus on \(\Mcc(P)\)
+\end{theorem}
+
+Corollary: given a DSC \((E,D)\) and a version parameterization with an induced poset version parameterization \(p\), then \(\Mcc(p)\) is a nucleus on \(\Mcc(E,D)\).
+\end{frame}
+
+\section{Free Distributive Lattices}
+\begin{frame}
+\frametitle{Motivation}
+"Internal logic" of the locale of a DSC  -- i.e., \(\Mcc(E,D)\)
+\begin{itemize}
+\item Atoms = "events with traces"
+\item Objects = traced event sets
+\item \(\&\) = intersection
+\item \(||\) = union
+\end{itemize}
+
+Not the logic we want! (It is a logic "of" states rather than "about" states).
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item A set \(S\) is \textit{redundant} with regards to \(T\) if \(T \subset S\). 
+\item The irredundency quotient is a nucleus, and the double powerset lattice, qotiented by irredundancy, is the free distributive lattice. 
+\item This gives positive formulae in disjunctive normal form, quotiented by all laws of first order intuitionistic logic.
+\item This is equivalent to the lattice \(\Ucc(\Oc(S))\) (upsets of downsets).
+\item This construction extends from sets to posets.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Free Distributive Lattice of a DSC}
+The internal logic the free locale of a DSC -- i.e. \(\UMc(E,D)  = \Ucc(\Oc(\Jc(rdp(DSC))))\)
+
+\begin{itemize}
+\item Atoms = "events with traces"
+\item Objects = \textbf{Sets of} traced event sets (as formulae in dnf)
+\item \(\&\) = actual logical conjunction
+\item \(||\) = actual logical disjunction
+\end{itemize}
+
+This \textbf{is} the logic you're looking for.
+
+\end{frame}
+
 \end{document}
