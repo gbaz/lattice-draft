@@ -46,7 +46,11 @@
 
 \title{Topological Aspects of Dependency Structures}
 \subtitle{CUNY Topology Seminar, October 22, 2019}
-\author{Gershom Bazerman, Awake Security \linebreak(jww Raymond Puzio, Albert Einstein Institute)}
+\author{Gershom Bazerman}
+\date{}
+\institute{Awake Security}
+\date[\today]{ \tiny{jww Raymond Puzio, Albert Einstein Institute}}
+
 
 \begin{document}
 \begin{frame}
@@ -295,6 +299,7 @@ Corollary: given a DSC \((E,D)\) and a version parameterization with an induced 
 \begin{itemize}
 \item Atoms = "events with traces"
 \item Objects = traced event sets
+\item \(\Dia\) =  "round the version up"
 \item \(\&\) = intersection
 \item \(||\) = union
 \end{itemize}
@@ -309,21 +314,66 @@ Not the logic we want! (It is a logic "of" states rather than "about" states).
 \item This gives positive formulae in disjunctive normal form, quotiented by all laws of first order intuitionistic logic.
 \item This is equivalent to the lattice \(\Ucc(\Oc(S))\) (upsets of downsets).
 \item This construction extends from sets to posets.
+\item (Thm., B. Puzio) This construction sends a join-preserving ponucleus to a nucleus.
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{The Free Distributive Lattice of a DSC}
-The internal logic the free locale of a DSC -- i.e. \(\UMc(E,D)  = \Ucc(\Oc(\Jc(rdp(DSC))))\)
+The (modal) internal logic the free locale of a DSC -- i.e. \(\UMc(E,D)  = \Ucc(\Oc(\Jc(rdp(DSC))))\)
 
 \begin{itemize}
 \item Atoms = "events with traces"
 \item Objects = \textbf{Sets of} traced event sets (as formulae in dnf)
+\item \(\Dia\) =  "round the version up"
 \item \(\&\) = actual logical conjunction
 \item \(||\) = actual logical disjunction
 \end{itemize}
 
 This \textbf{is} the logic you're looking for.
+
+\end{frame}
+
+\section{Solutions to Dependency Problems}
+\begin{frame}
+\begin{definition}
+A dependency problem in a DSC \((E,D)\) is the pair of a formula \(\phi\) in \(\UMc(E,D)\) and a monotone increasing (i.e. growing as further elements are added to the source set) objective function of type \(\Pc(E) \rightarrow \mathbb{R}\). A solution to such a problem is an event set which satisfies the formula and minimizes the objective function.
+\end{definition}
+
+Observation: Detecting \textit{compatible} event sets can be formulated as a dependency problem.
+\end{frame}
+
+\begin{frame}
+The cost of solving a dependency problem over a poset is bounded by the maximum number of disjuncts in a normalized dnf formula over that poset. This is the same as the maximal antichain in the downsets of that poset -- i.e. the \textbf{width}.
+
+\begin{theorem}
+\textbf{(Sperner, 1928)}: The powerset of a set with \(n\) elements, under inclusion ordering, has a width of \(\binom{n}{\ceil{n/2}}\).
+\end{theorem}
+\end{frame}
+
+\begin{frame}
+\begin{theorem}
+(B., Puzio): Define \(\Mf(a,b)\) as the central (maximal) coefficient of the formal polynomial expansion of \((1 + x + x^2 ... + x^a)^b\). Define \(\Hf(P)\) as the height of a poset, i.e. the length of its longest chain. Given any poset \(P\), then:
+\begin{equation*}
+ \Wf(\Oc(P)) \le \Mf(2,\Wf(P)) * \Mf(\Hf(P),\ceil{\Wf(P)/2})
+\end{equation*}
+\end{theorem}
+\end{frame}
+
+\begin{frame}
+\frametitle{Future Work}
+Mathematical:
+\begin{itemize}
+\item Develop a homology theory over conflicts using this framework. It should look like discrete morse theory.
+\item Relate this construction to directed topology.
+\end{itemize}
+
+Applied:
+\begin{itemize}
+\item Characterize the difficulty of problems for SAT solvers (and possibly give a general construction of "eager" SMT solving).
+\item Develop a modal language of dependencies for software packaging (Haskell, Nix, etc.).
+\item Provide a sound basis for the organization of data in Hales' Formal Abstracts project. 
+\end{itemize}
 
 \end{frame}
 
