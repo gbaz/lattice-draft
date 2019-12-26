@@ -29,7 +29,7 @@
 %------------------------------------------------
 
 \newcommand{\Mcc}{\mathcal{M}}
-\newcommand{\UMc}{\mathcal{UM}}
+\newcommand{\UBLc}{\mathcal{UBL}}
 \newcommand{\Wc}{\mathcal{W}}
 \newcommand{\Oc}{\mathcal{O}}
 \newcommand{\Pc}{\mathcal{P}}
@@ -89,7 +89,7 @@ A \textbf{Pre-Dependency Structure with Choice} is a pair \((E, D : E \rightarro
 A \textbf{Dependency Structure with Choice} (DSC) is a pre-DSC with \(D\) satisfying  appropriate conditions of transitive closure and cycle-freeness. We define \(X\) as a \textbf{possible dependency set} of \(e\) if \(X \in D(e)\). We call an event set \(X\) a \textbf{complete event set} if for every element \(e\) there is a possible dependency set \(Y\) of \(e\) such that \(Y \subseteq X\). A pre-DSC is a DSC if every possible dependency set of every element is complete, and no possible dependency set of any element contains the element itself. Pre-DSCs may be completed into DSCs by repeatedly taking transitive completion of possible dependency sets (with regards to each transitive possible dependency set) and then deleting cyclic sets (and elements whose possible dependency set becomes empty under this process) until a fixpoint is reached.
 \end{definition}
 
-DSCs are richer than the standard notion of a dependency tree or dependency graph. In such structures, a node \(a\) with edges to \(b\) and \(c\) exhibits a dependency on both \(b\) and \(c\). There is no way, however, to express a dependency on either \(b\) or \(c\). A domain-theoretic account of such structures is given by \textit{pomsets}, introduced by Vaughn Pratt [CITE]. Pomsets are a special instance of a broader class of structures, known as \textit{event structures}, introduced by Nielson, Plotkin and Winskel \cite{nielsen1981petri}, and used in the domain-theoretic semantics of concurrent computation and concurrent games. Such structures have not only a (choice-free, transitively normalized) dependency relation, but in addition a conflict structure which indicates incompatible collections of events (typically presented as a collection of consistent sets which carves out only compatible collections of events). Finally, there are so-called \textit{general event structures}, which extend event structures with a notion of choice in roughly the same fashion as DSCs (i.e. by moving from a partial ordering relation into a relation between elements and powersets). Their theory is less well behaved and understood, and its study is an area of ongoing work. DSCs may be characterized as general event structures which are conflict-free. Thus intuitively (i.e. not necessarily formally), in a lattice of expressive power, DSCs sit above pomsets, "side by side" with event structures, and below general event structures. One hope of the present is work is that it might be usefully extended in some fashion with conflicts, leading among other things to a further understanding of general event structures.\footnote{When first introduced, what we now know as "general event structures" were simply named "event structures", and what we now know as "event structures" were named "stable event structures." We follow the modern convention in this paper.}
+DSCs are richer than the standard notion of a dependency tree or dependency graph. In such structures, a node \(a\) with edges to \(b\) and \(c\) exhibits a dependency on both \(b\) and \(c\). There is no way, however, to express a dependency on either \(b\) or \(c\). A domain-theoretic account of such structures is given by \textit{pomsets}, introduced by Vaughn Pratt \cite{pratt1986modeling}. Pomsets are a special instance of a broader class of structures, known as \textit{event structures}, introduced by Nielson, Plotkin and Winskel \cite{nielsen1981petri}, and used in the domain-theoretic semantics of concurrent computation and concurrent games. Such structures have not only a (choice-free, transitively normalized) dependency relation, but in addition a conflict structure which indicates incompatible collections of events (typically presented as a collection of consistent sets which carves out only compatible collections of events). Finally, there are so-called \textit{general event structures}, which extend event structures with a notion of choice in roughly the same fashion as DSCs (i.e. by moving from a partial ordering relation into a relation between elements and powersets). Their theory is less well behaved and understood, and its study is an area of ongoing work. DSCs may be characterized as general event structures which are conflict-free. Thus intuitively (i.e. not necessarily formally), in a lattice of expressive power, DSCs sit above pomsets, "side by side" with event structures, and below general event structures. One hope of the present is work is that it might be usefully extended in some fashion with conflicts, leading among other things to a further understanding of general event structures.\footnote{When first introduced, what we now know as "general event structures" were simply named "event structures", and what we now know as "event structures" were named "stable event structures." We follow the modern convention in this paper.}
 
 \subsection{Reachable Dependencies Posets of a DSC}
 
@@ -131,7 +131,7 @@ In passing, we will make use of Birkhoff duality, which we recall here as well.
 
 \subsection{Distributive Lattices in Logic and Topology}
 
-Distributive lattices play a very special role in both logic and topology. From a logical standpoint, Heyting algebras provide a complete semantics for intuitionistic logic, with true and false corresponding to top and bottom, and corresponding to meets, or corresponding to joins, and implication being given by the relative pseudo-complement. More precisely, a formula in intuitionistic propositional logic is provable (tautological) if and only if it is valid (yields true under every assignment of variables) in every Heyting algebra (and in fact this result holds even when one considers only finite Heyting algebras). Hence, a finite Heyting algebra (resp. distributive lattice) is a setting where we can directly interpret expressions in intuitionistic logic [CITE VAN DALEN].
+Distributive lattices play a very special role in both logic and topology. From a logical standpoint, Heyting algebras provide a complete semantics for intuitionistic logic, with true and false corresponding to top and bottom, and corresponding to meets, or corresponding to joins, and implication being given by the relative pseudo-complement. More precisely, a formula in intuitionistic propositional logic is provable (tautological) if and only if it is valid (yields true under every assignment of variables) in every Heyting algebra (and in fact this result holds even when one considers only finite Heyting algebras). Hence, a finite Heyting algebra (resp. distributive lattice) is a setting where we can directly interpret expressions in intuitionistic logic \cite{van1988troelstra}.
 
 From a topological standpoint, frames are the object of study of locale theory, i.e. so-called "pointless topology." From any topological space -- given as a set of points, and a covering relation of open sets -- the open sets themselves form an order theoretic structure which is precisely a frame (which is known, when the homomorphisms between frames are viewed backwards, as a "locale"). If we then forget the points, and consider only the frame, we can still "do" topology -- and from any frame (resp. locale) we can recover a special type of space, known as a sober space. In fact, frames and sober spaces are in one-to-one correspondence \cite{johnstone1982stone, vickers1996topology}.
 
@@ -155,7 +155,7 @@ The completion is idempotent. Further, it is functorial. \(\Mcc\) acts on morphi
 
 % TODO give diagram.
 
-The collection of admissible sets is rather large and unwieldy. But in the finite case, we have a much nicer characterization of the completion, which is computationally simple and also suggestive and familiar with regards to structures that occur elsewhere in computer science. The following is a simplification and extension of MacNeille's characterization of the finite elements of his completion:
+The collection of admissible sets is rather large and unwieldy. But in the finite case, we have a much nicer characterization of the completion, which is computationally simple and also suggestive and familiar with regards to structures that occur elsewhere in computer science. The following is a simplification and extension of MacNeille's characterization of the finite elements of his completion, which holds even for posets which are not meet-semilattices:
 
 \begin{lemma}
 (Bazerman, Puzio [following MacNeille]) For a finite poset, \(\BLc(P)\) may be constructed as \(\Oc(\Jc(P)))\), with an injection that sends join-irreducible elements to their downsets, and composite elements to the union of their join-irreducible basis.
@@ -213,7 +213,7 @@ It would be remiss of us not to mention, as well, that the operation of sending 
 %TODO get right functor arrow (notation)??
 
 \subsection{The General Relationship between DSCs and Lattices}
-Given that every DSC induces a finite lattice, it is reasonable to ask the general relation between finite lattices and DSCs. 
+Given that every DSC induces a finite lattice, it is reasonable to ask the general relation between finite lattices and DSCs. The following heuristic arguments provide motivation for our theorem. 
 
 First, we consider the lattices induced by dependency structures with no choice -- i.e. where every event has a single possible dependency set. In such a case, the dependency structure presents a poset (and indeed, up to renaming, every poset induces a unique dependency structure). The reachable dependency poset of such a structure is generated by considering down-closed sets of events -- i.e. those where each event can occur only if all its dependencies occur. By Birkhoff duality, this is a distributive lattice, and thus choice-free dependency structures are equivalent to distributive lattices.
 
@@ -229,31 +229,25 @@ As another example, consider a single event which depends on the empty event set
 
 % TODO diagram
 
-Since M3 and N5 are the two "forbidden configurations" which may occur in general lattices, but not distributive lattices. This suggests that our "generalized DSCs" are closely related to general lattices. If we continue to drop the antichain condition, but retain the coherence and distinction conditions, we can still produce M3, but not N5. This suggests that "DSCs with multiplicity" (i.e. DSCs where we have a multiset of possible dependencies rather than a set of such) are closely related to modular lattices (which are characterized by having N5 as the single forbidden configuration). If we also retain the antichain condition, we cannot produce M3 directly, but we can produce larger constructions that contain it, as in Fig. \ref{Fig1}.
+M3 and N5 are the two "forbidden configurations" which may occur in general lattices, but not distributive lattices. This suggests that our "generalized DSCs" are closely related to general lattices. If we continue to drop the antichain condition, but retain the coherence and distinction conditions, we can still produce M3, but not N5. This suggests that "DSCs with multiplicity" (i.e. DSCs where we have a multiset of possible dependencies rather than a set of such) are closely related to modular lattices (which are characterized by having N5 as the single forbidden configuration). If we also retain the antichain condition, we cannot produce M3 directly, but we can produce larger constructions that contain it, as in Fig. \ref{Fig1}.
 
-This motivation allows us to formulate a precise theorem. For lack of a better term, we say a lattice "has horizontal obstruction" if three elements share the same structure both below and above them, as in M3. 
+This motivation allows us to formulate a precise theorem. For lack of a better term, we say a lattice "has horizontal obstruction" if three elements share the same structure both below and above them (i.e. the precise same elements greater and less than them), as in M3. 
 
 \begin{theorem}
-There exists a map \textbf{uds} (underlying dependency structure) from modular lattices with no horizontal branching to DSCs such that  \(rdp \circ uds\) is the identity, and \(uds \circ rdp\) is an equivalence up to renaming.
+\label{representation}
+There exists a map \textbf{uds} (underlying dependency structure) from modular lattices with no horizontal obstruction to DSCs such that  \(rdp \circ uds\) is the identity, and \(uds \circ rdp\) is an equivalence up to renaming.
 \end{theorem}
 
 \begin{proof}
-We construct \(uds(L)\) in two steps, first establishing the "free" DSC \(FD\) on the lattice \(L\), and then identifying events which are the "same". \(FD(L)\) has an event set consisting of the join-irreducible elements of \(L\), and as dependencies singleton sets freely generated by the ordering relation on the elements.  I.e. \(FD(L) = (\Jc(L), X \mapsto \{\{ y \in \Jc(L) \mid y<x\}\})\)
+We construct \(uds(L)\) in two steps, first establishing the "free" DSC \(FD\) on the lattice \(L\), and then identifying events which are the "same". \(FD(L)\) has an event set consisting of the join-irreducible elements of \(L\), and as dependencies singleton sets freely generated by the ordering relation on the elements.  I.e. \(FD(L) = (\Jc(L), X \mapsto \{\{ y \in \Jc(L) \mid y<x\}\})\). To identify two events is to substitute all references for first to the second, and further, to define the new collection of possible dependency sets of the first to be the union of the existing collections given by both events. We denote a DSC \(D\) with two events, \(a\) and \(b\) identified as  \(D[a\sim b]\). The set \(Q(L)\) consists of pairs of join-irreducible elements \((a,b)\) such that  \(\exists\, x . \,  x < a \vee b \band x \vee a = x \vee b = a \vee b\).  Now, \(uds(L) = FD(L)[a \sim b,a' \sim b',...]\) for all \((a,b), (a',b'), ...\in Q(L)\).
 
-% all elements which join with a composite to the same join are identified.
-\end{proof}
+Now we show that \(rdp \circ uds\) is the identity. When the source lattice is distributive, then the quotient operation trivializes. By Birkhoff duality, we indeed have the identity. When the source lattice fails to be distributive, we know that it is nonetheless modular, and so a failure will manifest as an instance of M3 as a sublattice, which will necessarily result in elements of \(Q(L)\). Given a pair in \(Q(L)\), considered as two event sets, the existence of a third "unifying" element (necessarily unordered with regards to them) could come about in two ways. Either, it could be a join irreducible element  as in M3, or it could be join reducible. However, if it were join irreducible, then either it would share the same structure below as well, or there would be another element below it with the same property that did share the same structure below. As such, the lattice would have horizontal obstruction. Therefore the element is necessarily join reducible, and since it is unordered with regards to the pair, it must be the join of two elements below the pair. Now, in the \(rdp \circ uds\) roundtrip, this "unifying" element will be discarded by \(uds\) because it is join reducible, and reconstructed by \(rdp\). Furthermore, the two "unified" elements will be quotiented into a single event with two possible dependency sets in one direction, and then "exploded" back into two distinct elements in the return trip. The rdp construction guarantees their structure below is preserved by such a roundtrip, and the fact that the two events were identified ensures that no additional structure above was created.
 
+The above argument demonstrates that \(rdp\) generates all horizontal-obstruction-free modular lattices. To complete the proof we must now show that \(rdp\) generates only such lattices. To fail to be modular, there would need to exist three generated elements, \(a, b, x\) such that \(a < b\) and \(a \vee (x \wedge b) \neq (a \vee x) \wedge b\). In the \(rdp\) construction such elements correspond to event sets, and join is set union (while meet may have more structure). So we would need an event set \(b\) with a subset \(a\) such that if we take  \(x \wedge b\) and then union with \(a\) the result is different than if we first union with \(a\) and then meet \(b\). If \(a\) is lower than \(x \wedge b\), then the equality holds trivially. If it is unordered with regard to \(x \wedge b\) , then the meet of the two must be \(b\), and again the equality holds. Hence, we are concerned with the case when it is higher than the join. But in such a case, \(a \vee x\)  must meet \(b\) precisely at \(a\), since the meet is the first "valid" subset of the intersection, and we already know \(a\) is valid. And since \(a\) lies above \(x \wedge b\) , we know that too is \(a\), and hence we know the lattice must be modular.
 
+Finally, we demonstrate that \(rdp\) must generate lattices that are free of horizontal-obstruction.Two events can share the same structure above if everything which depends on one must also depend on the other. However, since these events must be relatively unordered, a third element sharing the same structure above would invalidate that condition on one of the first two. Hence, for three elements to share the same structure above, one must be join-reducible. In such a case, these elements would then not share the same structure below.
 
-\begin{theorem}
-There exists a map \textbf{uds} (underlying dependency structure) from lattices to DSCs such that \(uds \circ rdp\) is an equivalence up to renaming.
-\end{theorem}
-\begin{proof}
-We proceed in two steps, first establishing the "free" DSC \(FD\) on the nodes of the lattice \(L\), and then identifying nodes which represent the "same" event. \(FD(L)\) has an event set consisting of every node of \(L\), and dependencies singleton sets freely generated by the ordering relation on the elements.  I.e. \(FD(L) = (\Jc(L), X \mapsto \{\{ y \in \Jc(L) \mid y<x\}\})\). To identify two events is to substitute all references for first to the second, and further, to define the new collection of possible dependency sets of the first to be the union of the existing collections given by both events. We denote a DSC \(D\) with two events, \(a\) and \(b\) identified as  \(D[a\sim b]\). The set \(Q(L)\) consists of pairs of events \((a,b)\) such that  \(\forall x \in \Oc(a \vee b). \, x \vee a = x \vee b = a \vee b\).  Now, \(uds(L) = FD(L)[a \sim b,a' \sim b',...]\) for all \((a,b), (a',b'), ...\in Q(L)\).
-
-It remains to show that this induces an equivalence. First we establish that for "choice-free" events (i.e. events with exactly one possible dependency set) the construction of \(FD(L)\) already induces an equivalence, and further, that such events do not participate in \(Q(L)\). [TODO]
-
-Next, we show that events with multiple possible dependency sets are reconstructed by the identification operation over elements of \(Q\). [TODO].
+% TODO check if this suffices as a proof, improve.
 \end{proof}
 
 
@@ -261,9 +255,9 @@ Next, we show that events with multiple possible dependency sets are reconstruct
 
 We have seen how a DSC may be transformed into a finite locale via the extended Bruns-Lakser completion of its reachable dependency poset. It is natural to ask how far this relationship extends. It is almost immediate that in fact any finite locale may be generated by a DSC. All that is necessary is to consider the join-irreducible elements of the frame as events, each of whose single possible dependency set is all other events below it in the frame ordering. However, even up to renaming of events, distinct DSCs can nonetheless present order-equivalent frames. For example, the DSC with \(a\) depending on \(b\) or \(c\) gives the same frame as the DSC with \(a\) depending on \(b\) and \(d\) depending on \(c\) (since the Bruns-Lakser completion "splits" the former \(a\) into two copies to begin with). 
 
-This tension (multiple presentations of the same structure) occurs very frequently in topos theory (and its decategorification in locale theory) when multiple sites (categories with a topology, resp. posets with a coverage) can present the same topos (resp. locale). This suggests that a tighter correspondence should not be to locales directly, but rather to their presentations as sites (known, for locales, as "posites") [CITE SPIVAK].
+This tension (multiple presentations of the same structure) occurs very frequently in topos theory (and its decategorification in locale theory) when multiple sites (categories with a topology, resp. posets with a coverage) can present the same topos (resp. locale). This suggests that a tighter correspondence should not be to locales directly, but rather to their presentations as sites (known, for locales, as "posites"). A good overview of posites is provided by \cite{schultz2017temporal}.
 
-The central tool in this section is the nucleus, which is the localic analogue of a topology. We recall its definition and some basic facts regarding it. Readers are again referred to [VICKERS, JOHNSTONE] for further discussion.
+The central tool in this section is the nucleus, which is the localic analogue of a topology. We recall its definition and some basic facts regarding it. Readers are referred to \cite{johnstone1982stone, vickers1996topology} for further discussion.
 
 A \textbf{nucleus} is the algebraic structure on a frame that gives a sublocale. It given as a monotone function on a frame \(j : L \rightarrow L\), satisfying three properties. First: \(j(a \wedge b) = j(a) \wedge j(b)\). Second, \(a \le j(a)\). Finally, \(j(ja) \le j(a)\). These may be summarized as saying that it is (finite) meet-preserving, contractive (in this case, inflationary) and idempotent. An element of \(L\) is said to be \(j\)-closed if \(j(a)=a\). Further, if \(L\) is a frame, then \(L/j\), which consists only of \(j\)-closed elements, is also a frame, and there exists a surjective frame homomorphism \(j^* : L \rightarrow L/j\). If we view a frame as a category, a nucleus is just a left-exact idempotent monad; if we view a frame as a decategorified topos, a nucleus is a topology; and if we view a frame as generated by its internal logic, a nucleus gives a "possibility" or "locally true" modal operator on that logic, analogous to the S4 diamond.
 
@@ -292,44 +286,11 @@ We consider a finite frame as given by its underlying poset, i.e. as \(\Oc(P)\).
 We can now state the central theorem of this section:
 
 \begin{theorem}
-The set of DSCs is one-to-one with the set of finite posites of locales, equipped with the Bruns-Lakser topology.
+The set of DSCs is one-to-one with the set finite posites generated by downsets of horizontal-obstruction-free modular lattices, and equipped with the Bruns-Lakser topology.
 \end{theorem}
 \begin{proof}
-[TODO]
+The bulk of the work is handled by \ref{representation}, which establishes the connection between DSCs and horizontal-obstruction-free modular lattices. The correspondence between these and their downsets is established by Birkhoff duality, and the construction of a locale by Bruns-Lakser by the above lemma.
 \end{proof}
-
-% Its lattices with the BL topology on O(L).
-
-
-% TODO PROVE THIS. Really should be dlats such that a -> b /= a -> c if b /= c, i.e forall a bc a -> b <==> a -> c iff b == c. nope. not sure what the characterization is!
-
-
-% lattices bi-equiv to dscs. lattices with no top bottom bi-equiv to lattices with top bottom. lattices with no top bottom bi-equiv by birhkoff to locales with injective implication.
-
-% strong-leibnitzian
-
-% TODO extend to morphisms and have an equivalence of categories.
-
-
-% Every finite locale has a presentation as a DSC. Further, there is a correspondence of sets between DSCs (up to renaming) and posites equipped with the BL topology.
-% Extension to an equivalence of categories by...
-
-
-There is a morphism, \(\Lcc\) that sends DSCs to finitely generated posites. It acts as identity on the set of all events, and generates a nucleus that acts as identity on elements of \(Pc(E)\) which are complete,  transforms the dependency relation into a nucleus by [....]
-
-% Take the powerset of the event set, then impose the double-basis topology. Then impose the ordering on that.
-
-\begin{theorem}
-DSC and FinGenPosite are equivalent as categories
-\end{theorem}
-
-%TODO maybe? its a conjecture
-% We don't even have a category of DSCs.
-%Finitely generated locales are locales given as a downset over a set and a topology.
-
-
-% Really its a free set with a coverage. Consider morphisms of sites
-
 
 \section{The Modal Logics of Dependency Structures}
 \subsection{Version Parameterizations of Dependency Structures and their Posets}
@@ -385,39 +346,38 @@ Given a DSC \((E,D)\), we construct a language consisting of atoms given by join
 
 %TODO explain what relative pseudo-complement interprets as in this setting 
 
-From the standpoint of nondeterministic concurrent semantics, this is perfectly reasonable. From two configurations (considered as nondeterministic traces), "or" gives us their combination, and "and" gives us the least trace which they share between them. However, from the standpoint of dependencies, this is insufficient. It is a logic of states in the system, but it is not a logic \textit{about} states in the system -- i.e., requirements. A a logical "or"  would express that we're asking for one or the other event set as such, unlike the disjunction given here. Similarly, a logical "and" would express that we are requiring all events in both sets (i.e. what disjunction actually provides). Without this missing logical "or", for example, we cannot give a formula that specifies "any way to reach an event, regardless of the dependencies," as in the logic thus far, \(a_b \bor a_c\) specifies \textit{both} ways, as opposed to \textit{either} way.
+The pvp-induced nucleus discussed above equips the internal logic of \(\BLc(E,D)\) with a modal operator. We can interpret this operator as "round (or upgrade) to the highest version," and give corresponding interpretations of the meaning of its basic laws. \(x \rightarrow \Dia{x}\) tells us that everywhere \(x\) is valid, so too is its highest version (which is precisely how we constructed our modality to begin with). \(\Dia\Dia{x} \rightarrow \Dia{x}\) tells us that the highest version of the highest version is just the highest version. \((x \rightarrow y) \rightarrow (\Dia{x} \rightarrow \Dia{y})\)  tells us that if an implication holds for an event set, then the highest version of that set implies the highest version of the consequent. Finally, \(\Dia(x \band y) = \Dia{x} \band \Dia{y}\) tells us that the highest version of a conjunction may be computed as the conjunction of the highest versions of its constituents.
 
-Some further mathematical constructions are required to build back up to the logic we'd really like. Returning to the finite characterization of the extended Bruns-Lakser completion, we note that taking the downsets of the join-irreducible elements is effectively taking their free join-completion. Dually, taking up-sets is a free meet-completion. In fact, for a discrete set \(S\), \(\Ucc(\Oc(S))\) is the \textbf{free distributive lattice} over S, which is a well studied mathematical object [CITE]. The elements of this belong to \(\Pc(\Pc(S)\) and consist of its \textit{irredundant subsets}. This is to say that we can read these elements as logical expressions in disjunctive normal form, for example as \(ab \bor c\). An irredundant set is one in which the clauses have been simplified -- i.e. in which \(a \bor ab\) has been reduced to simply \(a\).  In this construction, join remains union -- but now it is not a union of sets of atoms, but a union of \textbf{sets of sets} of atoms. Meet however, is no longer intersection. Rather, it becomes convolution, just as in standard logic! This is to say that the meet (and) of \(a \bor b\) and \(c \bor d\) becomes the irredundant (simplified) core of \(a \band c \bor a \band d \bor b \band c \bor b \band d\).
+In fact, the this modality is powerful enough to yield an internal "bind" operator. Since we have a strength that gives \(x \band \Dia{y} \rightarrow \Dia(x \band y)\), and since we have an internal evaluation \(x \band (x \rightarrow y) \rightarrow y\), then we have \(\Dia{x} \band (x \rightarrow \Dia{y}) \rightarrow \Dia{y}\), read as "if we know that some version of x implies the highest version of y, then to imply y it suffices to consider the highest version of x." Hence, we have a computational monad in the sense of Moggi \cite{moggi1991notions}, and rounding (or "upgrading") is an "effect".
+
+% Show that this is not true for disjunction -- counterexample.
+
+From the standpoint of nondeterministic concurrent semantics, all of this is perfectly reasonable. From two configurations (considered as nondeterministic traces), "or" gives us their combination, and "and" gives us the least trace which they share between them. However, from the standpoint of dependencies, this is insufficient. It is a logic of states in the system, but it is not a logic \textit{about} states in the system -- i.e., requirements. A a logical "or"  would express that we're asking for one or the other event set as such, unlike the disjunction given here. Similarly, a logical "and" would express that we are requiring all events in both sets (i.e. what disjunction actually provides). Without this missing logical "or", for example, we cannot give a formula that specifies "any way to reach an event, regardless of the dependencies," as in the logic thus far, \(a_b \bor a_c\) specifies \textit{both} ways, as opposed to \textit{either} way.
+
+Some further mathematical constructions are required to build back up to the logic we'd really like. Returning to the finite characterization of the extended Bruns-Lakser completion, we note that taking the downsets of the join-irreducible elements is effectively taking their free join-completion. Dually, taking up-sets is a free meet-completion. In fact, for a discrete set \(S\), \(\Ucc(\Oc(S))\) is the \textbf{free distributive lattice} over S, which is a well studied mathematical object \cite{gratzer2009lattice}. The elements of this belong to \(\Pc(\Pc(S)\) and consist of its \textit{irredundant subsets}. This is to say that we can read these elements as logical expressions in disjunctive normal form, for example as \(ab \bor c\). An irredundant set is one in which the clauses have been simplified -- i.e. in which \(a \bor ab\) has been reduced to simply \(a\).  In this construction, join remains union -- but now it is not a union of sets of atoms, but a union of \textbf{sets of sets} of atoms. Meet however, is no longer intersection. Rather, it becomes convolution, just as in standard logic! This is to say that the meet (and) of \(a \bor b\) and \(c \bor d\) becomes the irredundant (simplified) core of \(a \band c \bor a \band d \bor b \band c \bor b \band d\).
 
 There are some interesting open problems regarding free distributive lattices, in particular the search for a closed form expression that counts the elements of such a construction over a set of a given size (on which more later).
 
-The free distributive lattice construction extends to any poset \(P\), where the up-sets of the downsets are the free distributive lattice of a poset. This is a less studied, but still known construction. As above, join is union and meet is convolution. But when we "multiply" two atoms, we don't simply conjoin them. Rather, we take their join in the underlying poset. Hence we arrive at a quotient of the free distributive lattice generated when the elements of \(P\) are considered simply as a set, and potentially a much smaller one. For example, if the underlying poset is a linear order, then the free distributive lattice over it is equivalent to the original poset. In general, the more ordering in the original poset, the smaller the resultant free distributive lattice over it.
+The free distributive lattice construction extends to any poset \(P\), where the up-sets of the downsets are the free distributive lattice of a poset. This is a less studied, but still known construction \cite{johnstone1982stone}. As above, join is union and meet is convolution. But when we "multiply" two atoms, we don't simply conjoin them. Rather, we take their join in the underlying poset. Hence we arrive at a quotient of the free distributive lattice generated when the elements of \(P\) are considered simply as a set, and potentially a much smaller one. For example, if the underlying poset is a linear order, then the free distributive lattice over it is equivalent to the original poset. In general, the more ordering in the original poset, the smaller the resultant free distributive lattice over it.
 
- In line with this, we can build the free meet-completion of the idempotent distributive lattice completion of a dependency poset by the compound construction \(\Ucc(\Oc(\Jc(P)))\). For a DSC, the internal logic of this construction, which we call \(\UMc(E,D)\) has precisely the same syntax as that of the internal logic \(\BLc(E,D)\). However, while the normal form of the latter consisted of a set of irreducible elements, the normal form for our new construction consists of a set of sets -- i.e. a boolean expression of these elements given in disjunctive normal form, and simplified by reduction with regards to redundancy as well as the ordering relationship given on the join-irreducibles. We refer to the elements of \(\UMc(E,D)\) not as event sets, but as event equations, since they consist of events related by conjunction and disjunction. Further, it should be noted that since \(\BLc\) is functorial, and taking up-sets is functorial, then the compound \(\UMc\) is also functorial, and has an action on morphisms of posets.
+ In line with this, we can build the free meet-completion of the idempotent distributive lattice completion of a dependency poset by the compound construction \(\Ucc(\Oc(\Jc(P)))\). For a DSC, the internal logic of this construction, which we call \(\UBLc(E,D)\) has precisely the same syntax as that of the internal logic \(\BLc(E,D)\). However, while the normal form of the latter consisted of a set of irreducible elements, the normal form for our new construction consists of a set of sets -- i.e. a boolean expression of these elements given in disjunctive normal form, and simplified by reduction with regards to redundancy as well as the ordering relationship given on the join-irreducibles. We refer to the elements of \(\UBLc(E,D)\) not as event sets, but as event equations, since they consist of events related by conjunction and disjunction. Further, it should be noted that since \(\BLc\) is functorial, and taking up-sets is functorial, then the compound \(\UBLc\) is also functorial, and has an action on morphisms of posets.
  
 %TODO illustrations
 
 %TODO explain what relative pseudo-complement interprets as in this setting  ?
 
-% This section discuss M not UM, move it around?
-As discussed above this nucleus equips the internal logic of \(\BLc(E,D)\) with a modal operator. We can interpret this operator as "round (or upgrade) to the highest version," and give corresponding interpretations of the meaning of its basic laws. \(x \rightarrow \Dia{x}\) tells us that everywhere \(x\) is valid, so too is its highest version (which is precisely how we constructed our modality to begin with). \(\Dia\Dia{x} \rightarrow \Dia{x}\) tells us that the highest version of the highest version is just the highest version. \((x \rightarrow y) \rightarrow (\Dia{x} \rightarrow \Dia{y})\)  tells us that if an implication holds for an event set, then the highest version of that set implies the highest version of the consequent. Finally, \(\Dia(x \band y) = \Dia{x} \band \Dia{y}\) tells us that the highest version of a conjunction may be computed as the conjunction of the highest versions of its constituents.
-
-In fact, the this modality is powerful enough to yield an internal "bind" operator. Since we have a strength that gives \(x \band \Dia{y} \rightarrow \Dia(x \band y)\), and since we have an internal evaluation \(x \band (x \rightarrow y) \rightarrow y\), then we have \(\Dia{x} \band (x \rightarrow \Dia{y}) \rightarrow \Dia{y}\), read as "if we know that some version of x implies the highest version of y, then to imply y it suffices to consider the highest version of x." Hence, we have a computational monad in the sense of Moggi [CITE], and rounding (or "upgrading") is an "effect".
-
-% Show that this is not true for disjunction -- counterexample.
-
-Since \(\BLc(E,D)\) is really a logic of concurrent execution, it makes good sense to consider versioning parameterizations not only from the standpoint of dependencies, where they occur most naturally, but also from the standpoint of concurrent semantics. If we view reachable configurations as nondeterministic traces, then the "highest version" is most general state with regards to any given configuration -- i.e. associates to any trace another one which provides at least as many options for further execution as before, and possibly more. The various laws can be read similarly. In fact, .
-
-To fully explore the dependency standpoint. we would also like to interpret the modal operator associated with a versioning parameterization in \(\UMc(E,D)\) as well. This brings us to the following:
+To fully explore the dependency standpoint. we would also like to interpret the modal operator associated with a versioning parameterization in \(\UBLc(E,D)\) as well. This brings us to the following:
 
 \begin{theorem}
-Given a DSC \((E,D)\) and a version parameterization with an induced poset version parameterization \(p\), then \(\UMc(p)\) is a nucleus on \(\UMc(E,D)\). Furthermore, it preserves not only meets, but also joins.
+Given a DSC \((E,D)\) and a version parameterization with an induced poset version parameterization \(p\), then \(\UBLc(p)\) is a nucleus on \(\UBLc(E,D)\). Furthermore, it preserves not only meets, but also joins.
 \end{theorem}
 \begin{proof}
 We have already established that \(\BLc\) yields a contractive endofunction on a distributive lattice (and more). Since taking up-sets is functorial, we know that this in turn yields a contractive endo-function on the compound. Furthermore, since the up-set functor runs from all posets to distributive lattices, it lifts order-preserving morphisms of posets into meet and join preserving morphisms of distributive lattices. Hence, the induced contractive endofunction preserves both meets and joins, and is a nucleus.
 \end{proof}
 
-This in turn induces a modality, as above, but now on the logic not only of event sets, but of event equations. Thus we get a simple type theory of package dependencies with an internal "version policy" modality that obeys the usual algebraic identities, and lets us treat contraction along the version policy as a monadic effect. Package version policies have been a subject of some debate in the applied world. But as we now see, all told, a package version policy in a dependency structure is just a certain type of monad in the free distributive lattice over the join-irreducibles of the associated poset.
+This in turn induces a modality, as above, but now on the logic not only of event sets, but of event equations. If we view reachable configurations as nondeterministic traces, then the "highest version" is most general state with regards to any given configuration -- i.e. associates to any trace another one which provides at least as many options for further execution as before, and possibly more. The various laws can be read similarly. %TODO check intuition, give example?
+
+Thus we get a simple type theory of package dependencies with an internal "version policy" modality that obeys the usual algebraic identities, and lets us treat contraction along the version policy as a monadic effect. Package version policies have been a subject of some debate in the applied world. But as we now see, all told, a package version policy in a dependency structure is just a certain type of monad in the free distributive lattice over the join-irreducibles of the associated poset.
 
 % Free Distributive Lattices and Nuclei
 
@@ -425,7 +385,7 @@ This in turn induces a modality, as above, but now on the logic not only of even
 In future work, we will discuss a general theory of incompatibilities. For now, we define a general notion of a dependency problem.
 
 \begin{definition}
-A dependency problem in a DSC \((E,D)\) is the pair of a formula \(\phi\) in \(\UMc(E,D)\) and a monotone increasing (i.e. growing as further elements are added to the source set) objective function of type \(\Pc(E) \rightarrow \mathbb{R}\). A solution to such a problem is an event set which satisfies the formula and minimizes the objective function.
+A dependency problem in a DSC \((E,D)\) is the pair of a formula \(\phi\) in \(\UBLc(E,D)\) and a monotone increasing (i.e. growing as further elements are added to the source set) objective function of type \(\Pc(E) \rightarrow \mathbb{R}\). A solution to such a problem is an event set which satisfies the formula and minimizes the objective function.
 \end{definition}
 
 This naturally encodes many problems. For example, it allows us to calculate the minimal dependencies needed to reach a certain state. Further, if we associate a cost function which counts the number of incompatibilities or conflicts in a given event set, then a conflict-free solution is possible when a minimal solution has a cost of zero.
@@ -507,6 +467,10 @@ When a poset is discrete (i.e., a set) then this collapses to a statement of the
 % solve conflict stuff
 
 % Relatiionship to SAT solving. phase transition = width. dnf vs cnf.
+
+% RELATED WORK
+% Subsumption lattice
+
 
  \nocite{*}
  \bibliographystyle{amsalpha}
