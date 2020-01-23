@@ -7,6 +7,7 @@
 \usepackage{xypic}
 \usepackage{cancel}
 \usepackage{mathtools}
+\usepackage{tikz-cd}
 \newtheorem*{remark}{Remark}
 
 
@@ -76,7 +77,7 @@ It is widely recognized as desirable to give a mathematical semantics to specifi
 \section{Introduction}
 This project began with seeking to understand the mathematical structure and logic of software package repositories. Such repositories contain tens of thousands of packages, with complex webs of interlinking dependencies, represented as expressions in propositional logic, containing not only branching choices, but also a notion of "compatibility ranges" and a notion of conflict. The structures we developed for modeling this turned out to be extremely similar to work on the semantics of concurrent computation -- and for good reason! The problem of branching dependency specification is exactly the problem of concurrent computation, just "turned on its head." Semantics of concurrent computation, at base, consist of a collection of states, and certain allowable transitions between them, which may be simultaneous, and which may be nondeterministic. A dependency specification, such as given by a package repository, also has a collection of states (the collection of installed packages), and also has a collection of allowable transitions (one may only install a new package when all dependencies are satisfied). Furthermore, concurrency takes the form of distinguishing when two independent packages may be built simultaneously. And finally, in both cases, we have a notion of "incompatibility" -- the former, in terms of contention for a shared resource, and the latter, in terms of e.g. disallowing that two linked packages expose the same required symbol with different definitions. The difference is then largely in the questions asked about such structures. With concurrent semantics, the whole structure is the "program" and the typical questions asked are how such things compose. With dependency structures, a "program" is what we think of as a "build plan" -- a single trace through the structure to a particular end state, and the questions asked are about optimality, reachability, etc. Our approach is inspired by the latter way of thinking, but we think it sheds light on many related issues as well. In particular, we see that "inside" any single concurrent program, we can examine not only its state space, but also a related internal logic -- the logic of dependency specifications. This lends itself to fine-grained intensional analysis, exploiting the interplay.
 
-In section 2, we introduce the basic elements and tools of our analysis -- dependency structures with choice, and their related "trace" structures, reachable dependency posets. Section 3 reviews the Bruns-Lakser completion, which is an independent order-theoretical result of general mathematical interest. We then discuss how reachable dependency posets, through the lens of Bruns-Lakser, produce a very general formal mathematical notion of what a "Merkle" structure is. Section 4 discusses two intuitionistic logics that can be built over this completion -- one an immediate "logic of paths", and one passing through the free distributive lattice over a poset to yield a "logic of requirements." Section 5 relates the topological and logical aspects of this investigation by examining how certain "covering" relations in dependency structures give rise to modalities in the associated logics discussed. Section 6 presents some preliminary investigations on how this approach may shed light on the innate topological structure of SAT problems, with regards to the difficulty they present to SAT solvers. We then conclude with a discussion on related and future work.
+In section 2, we introduce the basic elements and tools of our analysis -- dependency structures with choice, and their related "trace" structures, reachable dependency posets. Section 3 presents a number of results and constructions in order-theory relevant to reachable dependency posets. First among them is the Bruns-Lakser completion, for which we provide a simple calculation in the finite case that yields a very general formal mathematical notion of what a "Merkle" structure is. Section 3 also introduces a novel representation theorem, showing that dependency structures with choice correspond to a very particular subclass of lattices -- those which either distributive, or upper semimodular but not modular. It concludes by extending this construction to a class of locales. Section 4 discusses how "versioning" information can be thought of as "covering" relations in dependency structures, and can give rise to a modal operation on their resultant locales. Section 5 then gives  two intuitionistic logics that can be built over the resultant locales  -- one an immediate "logic of paths", and one passing through the free distributive lattice over a poset to yield a "logic of requirements." It also discusses how the modal operator interprets in these logics. Section 6 presents some preliminary investigations on how this approach may shed light on the innate topological structure of dependency problems, with regards to the difficulty they present to solvers. We then conclude with a discussion on related and future work.
 
 \section{Dependency Structures with Choice}
 We begin our analysis with a definition of dependency structures. These are intended to correspond almost immediately to the data provided by package repositories -- events (packages) which may depend on a choice of other events. These structures do not (yet) have any notion of a choice of versions -- so version 1.0 and 1.1 of the same package are logically two entirely different events. Later we will see how to recover this data.
@@ -102,8 +103,6 @@ Informally, a reachable dependency set is generated by asking "for each event, w
 
 It follows that for any DSC \((E,D)\), \(rdp((E,D))\)  is a subposet of \(\Pc(E)\), and which has all joins as unions. In fact, as a bounded poset with all joins, by the adjoint functor theorem for posets, it also has all  meets, and is hence a lattice.
 However, importantly, meets do not correspond to intersections. Consider a DSC containing an event \(a\), which depends on either \(b\) or \(c\). \(\{a,b\}\) and  \(\{a,c\}\) are reachable event sets, but their intersection, \(\{a\}\), is not The meet is in fact \({}\). As a syntactic convenience, when we denote operations whose domain is a lattice on a DSC, we implicitly pass through the reachable dependency poset construction.
-
-% TODO Show there is an inverse, also show this is a lattice
 
 \section{Distributive Lattices and the Idempotent Distributive Lattice Completion}
 
@@ -148,10 +147,17 @@ First, we recall the original construction of Bruns-Lakser and MacNeille.
 \end{definition}
 
 \begin{theorem}
-(Bruns-Lakser, MacNeille) The partially ordered set of all admissible sets of a meet-semilattice \(P\) is a distributive lattice, \(\BLc(P)\). There exists an injection \(bl : P \rightarrow \BLc(P)\), which preserves all meets and joins of admissible sets. Furthermore, any morphism to a distributive lattice that preserves all meets and joins of admissible sets, \(f : P \rightarrow D\), factors uniquely into the injection \(bl : P \rightarrow \BLc(P)\) followed by a distributive lattice homomorphism \(g : \BLc(P) \rightarrow D\).
+(Bruns-Lakser, MacNeille) The partially ordered set of all admissible sets of a meet-semilattice \(P\) is a distributive lattice, \(\BLc(P)\). There exists an injection \(bl : P \rightarrow \BLc(P)\), which preserves all meets and joins of admissible sets. Furthermore, any morphism to a distributive lattice that preserves all meets and joins of admissible sets, \(f : P \rightarrow D\), factors uniquely into the injection \(bl : P \rightarrow \BLc(P)\) followed by a distributive lattice homomorphism \(g : \BLc(P) \rightarrow D\), as in the following diagram:
+\begin{equation*}
+\begin{tikzcd}
+\BLc(P) \arrow[r, "!",dashed]            & D \\
+P \arrow[u, hook] \arrow[ru, "f"'] &
+\end{tikzcd}
+\end{equation*}
+
 \end{theorem}
 
-The completion is idempotent. Further, it is functorial. \(\Mcc\) acts on morphisms that preserve meets and admissible joins (i.e. joins of admissible sets) by lifting their action on all elements in the original source and target, and extending their action on new elements in the source by sending them to the join in the target of the targets of their join-irreducible basis in the source. This functor in fact gives the category of distributive lattices as a reflective category of either the subcategory of meet-semilattices which shares all objects but only has morphisms that preserve meets and admissible joins \cite{gehrke2014distributive}.
+The completion is idempotent. Further, it is functorial. \(\Mcc\) acts on morphisms that preserve meets and admissible joins (i.e. joins of admissible sets) by lifting their action on all elements in the original source and target, and extending their action on new elements in the source by sending them to the join in the target of the targets of their join-irreducible basis in the source. This functor in fact gives the category of distributive lattices as a reflective category of the subcategory of meet-semilattices which shares all objects but only has morphisms that preserve meets and admissible joins \cite{gehrke2014distributive}. 
 
 % TODO give diagram.
 
@@ -182,10 +188,10 @@ The collection of admissible sets is rather large and unwieldy. But in the finit
 \end{minipage}
 \begin{minipage}[c]{0.3\textwidth}
 \begin{equation*}
-    \xymatrix{& a_ba_cbc \ar@{-}[dl] \ar@{-}[dd] \ar@{-}[dr] & \\
+    \xymatrix{& a_ba_cbc \ar@{-}[dl]  \ar@{-}[dr] & \\
       \mathbf{a_bbc} \ar@{-}[d] \ar@{-}[dr] & &
         \mathbf{a_cbc} \ar@{-}[d] \ar@{-}[dl]\\
-        \underline{a_bb} \ar@{-}[d] & bc \ar@{-}[dl] \ar@{-}[dd] \ar@{-}[dr] &
+        \underline{a_bb} \ar@{-}[d] & bc \ar@{-}[dl] \ar@{-}[dr] &
           \underline{a_cc} \ar@{-}[d] \\
          \underline{b} \ar@{-}[dr] & & \underline{c} \ar@{-}[dl] \\
       & \mathbf{\emptyset} }
@@ -221,32 +227,72 @@ When choice appears, things become more complicated. Inspired by the Bruns-Lakse
 
 But suppose we were to lift these restrictions, and consider a "generalized DSC" as simply a poset coupled with an arbitrary partition. The reachable dependency poset of such a construction is then a quotient of the reachable dependency poset (i.e. downset dual) of the structure sans the partition relation. In particular, for any element (set of events), we quotient down all underlying elements that share a partition, except for the element (if any) that generated the given event set. This effectively runs the Bruns-Lakser completion in reverse. 
 
-As an example, consider a single event which can depend on the empty event set three ways. The underlying poset is a three-branched tree. The Birkhoff dual of downsets yields a cube. And the partition quotient of this is the lattice M3 -- the "chinese lantern".
+\begin{figure}
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix@=1em{& \top \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      a \ar@{-}[dr] & b \ar@{-}[d] & c \ar@{-}[dl]  \\
+       & \bot &}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix@=1em{& \top \ar@{-}[ddl] \ar@{-}[dr] & \\
+      & & b'  \ar@{-}[d]  \\
+      a \ar@{-}[dr] & & b \ar@{-}[dl] \\
+      & \bot &}
+\end{equation*}
+\end{minipage}
 
-% TODO diagram
+\caption{The non-distributive lattice \(M_3\), aka the "chinese lantern", and the non-distributive, non-modular lattice \(N_5\), the pentagon.}
+\label{Fig2}
+\end{figure}
 
-As another example, consider a single event which depends on the empty event set two ways, and one of those ways, can also depend on itself. I.e. \(a\) and \(a'\) depend on nothing, and \(a''\) depends on \(a'\). The underlying poset is a two-branched tree, one of whose branches itself has a branch. The Birkhoff dual of downsets yields two stacked diamonds. And the partition quotient of this, which identifies \(\{a,a'\}\) and  \(\{a,a',a''\}\) is the lattice N5 -- the pentagon.
+As an example, consider a single event which can depend on the empty event set three ways. The underlying poset is a three-branched tree. The Birkhoff dual of downsets yields a cube. And the partition quotient of this is the lattice \(M_3\)  (Figure \ref{Fig2}).
 
-% TODO diagram
+As another example, consider a single event which depends on the empty event set two ways, and one of those ways, can also depend on itself. I.e. \(a\) and \(a'\) depend on nothing, and \(a''\) depends on \(a'\). The underlying poset is a two-branched tree, one of whose branches itself has a branch. The Birkhoff dual of downsets yields two stacked diamonds. And the partition quotient of this, which identifies \(\{a,a'\}\) and  \(\{a,a',a''\}\) is the lattice \(N_5\)  (Figure \ref{Fig2}).
 
-M3 and N5 are the two "forbidden configurations" which may occur in general lattices, but not distributive lattices. This suggests that our "generalized DSCs" are closely related to general lattices. If we continue to drop the antichain condition, but retain the coherence and distinction conditions, we can still produce M3, but not N5. This suggests that "DSCs with multiplicity" (i.e. DSCs where we have a multiset of possible dependencies rather than a set of such) are closely related to modular lattices (which are characterized by having N5 as the single forbidden configuration). If we also retain the antichain condition, we cannot produce M3 directly, but we can produce larger constructions that contain it, as in Fig. \ref{Fig1}.
 
-This motivation allows us to formulate a precise theorem. For lack of a better term, we say a lattice "has horizontal obstruction" if three elements share the same structure both below and above them (i.e. the precise same elements greater and less than them), as in M3. 
+\begin{figure}
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix{& \top \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      ab \ar@{-}[d]& bc \ar@{-}[dl] \ar@{-}[dr] &
+        ac \ar@{-}[d]  \\
+        b \ar@{-}[dr]  & & c \ar@{-}[dl] \\
+        & \bot &
+        } 
+%      b \ar@{-}[dr] & \xcancel{a} \ar@{--}[d] & c \ar@{-}[dl] \\
+%       & \emptyset &}
+\end{equation*}
+\end{minipage}
+\caption{The lattice generated by the unwinding of a simple dependency structure with choice, where \(a\) may depend on \(b\) or \(c\). This is an instance of the lattice \(S_7\), the "centered hexagon".}
+\label{Fig3}
+\end{figure}
+
+\(M_3\) and \(N_5\) are the two "forbidden configurations" which may occur in general lattices, but not distributive lattices. This suggests that our "generalized DSCs" are closely related to general lattices. If we continue to drop the antichain condition, but retain the coherence and distinction conditions, we can still produce \(M_3\), but not \(N_5\). This suggests that "DSCs with multiplicity" (i.e. DSCs where we have a multiset of possible dependencies rather than a set of such) are closely related to modular lattices (which are characterized by having \(N_5\) as the single forbidden configuration). If we also retain the antichain condition, we cannot produce \(M_3\), but we can produce larger constructions that contain it, as in Fig. \ref{Fig3}.
+
+
+% TODO
+
+This motivation allows us to formulate a precise theorem. 
+
 
 \begin{theorem}
 \label{representation}
-There exists a map \textbf{uds} (underlying dependency structure) from modular lattices with no horizontal obstruction to DSCs such that  \(rdp \circ uds\) is the identity, and \(uds \circ rdp\) is an equivalence up to renaming.
+There exists a map \textbf{uds} (underlying dependency structure) from upper semimodular lattices without \(M_3\) as a sublattice to DSCs such that  \(rdp \circ uds\) is the identity, and \(uds \circ rdp\) is an equivalence up to renaming.
 \end{theorem}
 
 \begin{proof}
-We construct \(uds(L)\) in two steps, first establishing the "free" DSC \(FD\) on the lattice \(L\), and then identifying events which are the "same". \(FD(L)\) has an event set consisting of the join-irreducible elements of \(L\), and as dependencies singleton sets freely generated by the ordering relation on the elements.  I.e. \(FD(L) = (\Jc(L), X \mapsto \{\{ y \in \Jc(L) \mid y<x\}\})\). To identify two events is to substitute all references for first to the second, and further, to define the new collection of possible dependency sets of the first to be the union of the existing collections given by both events. We denote a DSC \(D\) with two events, \(a\) and \(b\) identified as  \(D[a\sim b]\). The set \(Q(L)\) consists of pairs of join-irreducible elements \((a,b)\) such that  \(\exists\, x . \,  x < a \vee b \band x \vee a = x \vee b = a \vee b\).  Now, \(uds(L) = FD(L)[a \sim b,a' \sim b',...]\) for all \((a,b), (a',b'), ...\in Q(L)\).
+We construct \(uds(L)\) in two steps, first establishing the "free" DSC \(FD\) on the lattice \(L\), and then identifying events which are the "same". \(FD(L)\) has an event set consisting of the join-irreducible elements of \(L\), and as dependencies singleton sets freely generated by the ordering relation on the elements.  I.e. \(FD(L) = (\Jc(L), x \mapsto \{\{ y \in \Jc(L) \mid y<x\}\})\). To identify two events is to substitute all references for first to the second, and further, to define the new collection of possible dependency sets of the first to be the union of the existing collections given by both events. We denote a DSC \(D\) with two events, \(a\) and \(b\) identified as  \(D/[a\sim b]\). The set \(Q(L)\) consists of pairs of join-irreducible elements \((a,b)\) such that  \(\exists\, x \in L . \,  x < a \vee b \band x \vee a = x \vee b = a \vee b\). (Note here that \(x\) need not be join-irreducible). Now, \(uds(L) = FD(L)/[a \sim b,a' \sim b',...]\) for all \((a,b), (a',b'), ...\in Q(L)\).
 
-Now we show that \(rdp \circ uds\) is the identity. When the source lattice is distributive, then the quotient operation trivializes. By Birkhoff duality, we indeed have the identity. When the source lattice fails to be distributive, we know that it is nonetheless modular, and so a failure will manifest as an instance of M3 as a sublattice, which will necessarily result in elements of \(Q(L)\). Given a pair in \(Q(L)\), considered as two event sets, the existence of a third "unifying" element (necessarily unordered with regards to them) could come about in two ways. Either, it could be a join irreducible element  as in M3, or it could be join reducible. However, if it were join irreducible, then either it would share the same structure below as well, or there would be another element below it with the same property that did share the same structure below. As such, the lattice would have horizontal obstruction. Therefore the element is necessarily join reducible, and since it is unordered with regards to the pair, it must be the join of two elements below the pair. Now, in the \(rdp \circ uds\) roundtrip, this "unifying" element will be discarded by \(uds\) because it is join reducible, and reconstructed by \(rdp\). Furthermore, the two "unified" elements will be quotiented into a single event with two possible dependency sets in one direction, and then "exploded" back into two distinct elements in the return trip. The rdp construction guarantees their structure below is preserved by such a roundtrip, and the fact that the two events were identified ensures that no additional structure above was created.
+First we show that on upper semimodular lattices free of \(M_3\) our construction gives the identity. This establishes a retract. Next, we show that \(rdp\) only generates such lattices. This shows the retract is in fact a full equivalence.
 
-The above argument demonstrates that \(rdp\) generates all horizontal-obstruction-free modular lattices. To complete the proof we must now show that \(rdp\) generates only such lattices. To fail to be modular, there would need to exist three generated elements, \(a, b, x\) such that \(a < b\) and \(a \vee (x \wedge b) \neq (a \vee x) \wedge b\). In the \(rdp\) construction such elements correspond to event sets, and join is set union (while meet may have more structure). So we would need an event set \(b\) with a subset \(a\) such that if we take  \(x \wedge b\) and then union with \(a\) the result is different than if we first union with \(a\) and then meet \(b\). If \(a\) is lower than \(x \wedge b\), then the equality holds trivially. If it is unordered with regard to \(x \wedge b\) , then the meet of the two must be \(b\), and again the equality holds. Hence, we are concerned with the case when it is higher than the join. But in such a case, \(a \vee x\)  must meet \(b\) precisely at \(a\), since the meet is the first "valid" subset of the intersection, and we already know \(a\) is valid. And since \(a\) lies above \(x \wedge b\) , we know that too is \(a\), and hence we know the lattice must be modular.
+Now we show that \(rdp \circ uds\) is the identity. When the source lattice is distributive, then the quotient operation trivializes (in a distributive lattice, joins are necessarily unique, and hence \(Q(L)\) is empty). Therefore, by Birkhoff duality, we have the identity. When the source lattice fails to be distributive, we know know by assumption that it does not have \(M_3\) as a sublattice, and it is upper semimodular. Since a lattice that is  both upper and lower semimodular can only fail to be distributive by having \(M_3\) as a sublattice, we know that our failure to be distributive must be a failure induced by failure of lower semimodularity. A lattice that is upper semimodular but not modular must contain as a cover-preserving sublattice \(S_7\), precisely our running example \cite{stern1999semimodular}. An instance of \(S_7\) necessarily results in an element of Q(L). For example, in Fig. \ref{Fig3},  we have the pair \((ab,ac)\), and there exists an \(x\) given by \(bc\) satisfying the desired condition (i.e. it is less than the join of the pair, and joining it with any element of the pair is equal to the join of the pair). Given a pair in \(Q(L)\), considered as two event sets, the existence of a third "unifying" element (necessarily unordered with regards to them) could come about in two ways. Firstly, it could be a join irreducible element. But that would induce as a sublattice \(M_3\), because all three elements would share the same join, and furthermore they must share the the same meet (otherwise that element would be reducible as the join of the distinct meets). Therefore the element is necessarily join reducible, and since it must be unordered with regards to the pair, it must be the join of two elements below the pair. Now, in the \(rdp \circ uds\) roundtrip, this "unifying" element will be discarded by \(uds\) because it is join reducible, and reconstructed by \(rdp\). Furthermore, the two "unified" elements will be quotiented into a single event with two possible dependency sets in one direction, and then "exploded" back into two distinct elements in the return trip. The rdp construction guarantees their structure below is preserved by such a roundtrip, and the fact that the two events were identified ensures that no additional structure above was created.
 
-Finally, we demonstrate that \(rdp\) must generate lattices that are free of horizontal-obstruction.Two events can share the same structure above if everything which depends on one must also depend on the other. However, since these events must be relatively unordered, a third element sharing the same structure above would invalidate that condition on one of the first two. Hence, for three elements to share the same structure above, one must be join-reducible. In such a case, these elements would then not share the same structure below.
+We know the generated lattice is semimodular by following Birkhoff's condition for weak semimodularity (which corresponds to semimodularity in the finite case). We say an element covers another element if it is greater than that element, and there is no intervening element between them. A finite lattice is semimodular iff for each pair of elements which are both covered by their join, they both cover their meet. In the case of the \(rdp\) construction, an event set covers another event set precisely when it differs by adding a single event. So for two elements to be covered by their join, they must each share all event save one. Necessarily, then, they will cover their meet, which is their intersection.
 
+Finally, we demonstrate that \(rdp\) must generate lattices that are free of \(M_3\). If a lattice has \(M_3\) as a sublattice, then it must contain three elements that are relatively unordered and for which any two elements will join to the join of all three. However, in the \(rdp\) construction, joins are unions, and therefore such a construction is impossible. This completes the proof.
 % TODO check if this suffices as a proof, improve.
 \end{proof}
 
@@ -264,7 +310,7 @@ A \textbf{nucleus} is the algebraic structure on a frame that gives a sublocale.
 A site of a topos is typically given as a category and an associated Grothendieck topology. But such topologies are somewhat painful to manipulate and reason about. In the special case where we are concerned only with the "(0,1)-sheaves" (i.e. truth-valued sheaves, i.e. downsets) of a poset, we can equally well just work with a site as a poset and a nucleus on its downsets.
 
 \begin{definition}
-The \textbf{Bruns-Lakser topology} on a finite locale is a function generated by the following stepwise procedure. First we consider the join-irreducible elements of the underlying poset of the locale (i.e. the poset of its join-irreducible elements). We term such elements the "double basis" of the locale. For double-basis elements, we define \(bl\) as the identity. For all joins of such elements, \(bl\) is again the identity. And for all meets of all elements thus far enumerated, \(bl\) is again the identity. For all other elements, \(bl\) is the meet of all idempotent elements greater than or equal to it. Since we have explicitly added all necessary meets, the result is necessarily an idempotent.
+The \textbf{Bruns-Lakser topology} on a finite locale is a function generated by the following stepwise procedure. First we consider the join-irreducible elements of the underlying poset of the locale (i.e. the poset of its join-irreducible elements). We term such elements the "double basis" of the locale (which consists of some, but not necessarily all, join-irreducible elements of the locale itself). For double-basis elements, we define \(bl\) as the identity. For all joins of such elements, \(bl\) is again the identity. And for all meets of all elements thus far enumerated, \(bl\) is again the identity. For all other elements, \(bl\) is the meet of all idempotent elements greater than or equal to it. Since we have explicitly added all necessary meets, the result is necessarily an idempotent.
 \end{definition}
 
 \begin{lemma}
@@ -286,10 +332,10 @@ We consider a finite frame as given by its underlying poset, i.e. as \(\Oc(P)\).
 We can now state the central theorem of this section:
 
 \begin{theorem}
-The set of DSCs is one-to-one with the set finite posites generated by downsets of horizontal-obstruction-free modular lattices, and equipped with the Bruns-Lakser topology.
+The set of DSCs is one-to-one with the set finite posites generated by downsets of upper semimodular lattices without \(M_3\), and equipped with the Bruns-Lakser topology.
 \end{theorem}
 \begin{proof}
-The bulk of the work is handled by \ref{representation}, which establishes the connection between DSCs and horizontal-obstruction-free modular lattices. The correspondence between these and their downsets is established by Birkhoff duality, and the construction of a locale by Bruns-Lakser by the above lemma.
+The bulk of the work is handled by \ref{representation}, which establishes the connection between DSCs and hupper semimodular lattices without \(M_3\). The correspondence between these and their downsets is established by Birkhoff duality, and the construction of a locale by Bruns-Lakser by the above lemma.
 \end{proof}
 
 \section{The Modal Logics of Dependency Structures}
@@ -382,7 +428,7 @@ Thus we get a simple type theory of package dependencies with an internal "versi
 % Free Distributive Lattices and Nuclei
 
 \section{Solutions to Dependency Problems, and their Combinatorial Properties}
-In future work, we will discuss a general theory of incompatibilities. For now, we define a general notion of a dependency problem.
+In future work, we will discuss a general theory of incompatibilities. For now, we define a general notion of a dependency problem, and show that the complexity of solving such problems may be related to order-theoretic properties of the dependency structures they are calculated over.
 
 \begin{definition}
 A dependency problem in a DSC \((E,D)\) is the pair of a formula \(\phi\) in \(\UBLc(E,D)\) and a monotone increasing (i.e. growing as further elements are added to the source set) objective function of type \(\Pc(E) \rightarrow \mathbb{R}\). A solution to such a problem is an event set which satisfies the formula and minimizes the objective function.
@@ -446,6 +492,23 @@ When a poset is discrete (i.e., a set) then this collapses to a statement of the
 
 
 \section{Related and Future Work}
+
+As discussed in the introduction, the closest related work to this is the study of event structures. An important line of work on event structures has been seeking to recover the generality of a general event structure (with choice) while maintaining some form of representation theorem in domains, as in \cite{nielsen1981petri}. One recent article in this direction (\cite{DBLP:journals/corr/abs-1802-03726}), summarizes its key idea as: "if in a general event structure an event has conflicting classes of causal histories, then it should split in several copies when generating the corresponding connected event structure." This insight is very close to the action taken by the Bruns-Lakser completion in the current work.
+
+Our work also hopes to provide a contribution in the direction of reconciling choice and conflict in semantics of  general event structures, although conflict is not yet integrated into what is presented in the current paper. A central element of future work is to try to re-equip DSCs with a suitable notion of conflict. One key preliminary observation in that direction begins with the fact that conflict structures themselves (often known in event literature often as "contexts"), are represented as a powerset of events that is downward-closed. That is, if some set \(s\) is a valid context (i.e. is conflict-free), then so too is every subset. The observation is that this same mathematical structure already has a direct topological interpretation -- a presentation of a simplicial complex (such that sets of cardinality \(n\) form the \(n\)-cells). The downward closure condition then amounts to the fact that to have a face, one must necessarily have its boundaries. Our hope is that from this observation, we can then find a way to relate the topology induced by dependency and choice to that induced by conflict into a unitary spatial structure.
+
+It is our suspicion that focus on compositional semantics of concurrent processes has \textit{necessarily} led to simplifying assumptions / enforced behaviors in process calculi, because trace semantics of concurrent programs do not compose, since they are only the 1-cells of a more complicated topological object. If this is the case, then what composes is the full cellular structure, including the higher structure of incompatibilities, 2-incompatibilities, etc.
+
+Another family of topological models of concurrency arises from directed algebraic topology, as in \cite{fajstrup2016directed}. In future work, we hope that the constructions here may be seen in such a light. In particular, many models of directed topology (in particular, those without self-loops) begin with a classical notion of a topological space constructed by points and data concerning open sets, and further equip those opens with some form of ordering. In a sense, this is again trying to reconcile two different innate topologies (those induced by the opens, corresponding to conflicts, and those induced by the orderings, corresponding to dependencies with choice). Topological information is then extracted from such structures by developing a notion of algebraic topology (homology, homotopy, etc.) over such directed spaces. Here, rather than having a full collection of opens, we hope to start with the localic "skeleton" of such, and study its homology relative to the space of conflict-free event sets. To do so requires picking (or, likely, constructing) a correct notion of finite homology suited to our purposes. We also suspect that methods of discrete Morse theory, as in \cite{forman2002user} may come into play, in particular when studying conflicts through the lens of dependency problems, where the conditions on such constructions seem to induce a discrete Morse structure.
+
+In fact, the notion of equipping a spatial structure with a further poset structure goes back before directed topology to the work of physicist Rafel Sorkin \cite{sorkin1983posets}, who hoped to use such structure to capture quantum effects. The constructions here and elsewhere in directed topology may find use in helping to realize Sorkin's program.
+
+The connection explored between lattices of certain forms and counting problems is one of a number of potential connections to the combinatorics of extremal set theory as in \cite{stanley2013algebraic}. Also potentially related is the Stanley-Reisner ring \cite{francisco2014survey}, which also connects lattice combinatorics to algebraic topology.
+
+The present work has provided a meaningful interpretation of the versioning parameterization modality in terms of dependency structures and packages. However, the same modality also may be interpreted in terms of concurrent semantics. What would it mean in such a case? One suggestion, which we have not yet explored, is that it may correspond to some for of modality for temporal logic, with different modes capturing "eventually," "always," "soon," etc.
+
+On the computer science side, some key work in studying the semantics and solvability of package dependencies, including basic results about complexity (in particular NP-completeness),  has been conducted in \cite{di2006edos, abate2012dependency} . Version control and attendant topological models have been studied in \cite{angiuli2014homotopical} and \cite{mimram2013categorical}. We believe our work makes a contribution by highlighting the essential similarities involved in modeling both of these, and its relationship to concurrent semantics.
+
 % In fact, since \(\Dia\) commutes with meets (i.e. \(\Dia(x \band y) = \Dia{x} \band \Dia{y}\) and  \(\Dia(x \bor y) = \Dia{x} \bor \Dia{y}\))
 % Look at paper ray sent on physics -- sorkin, penrose.
 % Structure of mathematical proofs, knowledge
@@ -497,6 +560,8 @@ When a poset is discrete (i.e., a set) then this collapses to a statement of the
 
 % Logi-computational aspects -- Single-Implicative Normal Form of equations. From cnf, each atom -> all clauses not containing it, anded. From DNF -> each atom to all clauses containing it, ored. SAT is send a formula to SINF (forgetting polarity relations) then under polarity relations, trying to discover if there is any assignment of truth values such that the incompatibility function does not proc.
 
+
+% Thanks James, Jay, Shridar, trimble, jonas frey
 
 
 % Thank. James, Jay, Tom. SPJ, HVR -- early inspiration. MIT categories seminar, spivak. Richard Stanley.
