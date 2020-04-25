@@ -1,0 +1,625 @@
+\documentclass{beamer}
+\usetheme{Warsaw}
+\usecolortheme{spruce}
+
+
+\setbeamertemplate{headline}{%
+\leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=\paperwidth,ht=2.5ex,dp=1.125ex]{palette quaternary}%
+    \insertsectionnavigationhorizontal{\paperwidth}{}{\hskip0pt plus1filll}
+    \end{beamercolorbox}%
+  }
+}
+
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex
+\usepackage{amssymb}
+\usepackage{xypic}
+\usepackage{cancel}
+\usepackage{mathtools}
+\usepackage{tikz-cd}
+\usetikzlibrary{decorations.pathmorphing}
+\usepackage{graphicx}
+
+\tikzset{shorten <>/.style={shorten >=#1,shorten <=#1}}
+
+\newtheorem*{remark}{Remark}
+
+%SetFonts
+
+%------------------------------------------------
+%            Symbols in "mathcal"
+%------------------------------------------------
+
+\newcommand{\Mcc}{\mathcal{M}}
+\newcommand{\UMc}{\mathcal{UM}}
+\newcommand{\Wc}{\mathcal{W}}
+\newcommand{\Oc}{\mathcal{O}}
+\newcommand{\Pc}{\mathcal{P}}
+\newcommand{\Ucc}{\mathcal{U}}
+\newcommand{\Jc}{\mathcal{J}}
+\newcommand{\Cc}{\mathcal{C}}
+\newcommand{\Lcc}{\mathcal{L}}
+\newcommand{\Dcc}{\mathcal{D}}
+\newcommand{\BLc}{\mathcal{BL}}
+
+\newcommand{\band}{\mathbin{\&}}
+\newcommand{\bor}{\mathbin{|}}
+\newcommand{\Dia}{\diamondsuit}
+
+\newcommand{\Mf}{\mathfrak{m}}
+\newcommand{\Sf}{\mathfrak{s}}
+\newcommand{\Wf}{\mathfrak{w}}
+\newcommand{\Hf}{\mathfrak{h}}
+
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\graphicspath{ {./images/} }
+
+\title[Dependency, Conflict, and Concurrency]{A localic approach to the semantics of dependency, conflict, and concurrency}
+\subtitle{ACT Seminar, UCR (via Zoom), 29 April 2020}
+\author{Gershom Bazerman}
+\date{29 April 2020}
+\institute{Awake Security}
+\date[\today]{ \tiny{jww Raymond Puzio, Albert Einstein Institute}}
+
+
+\begin{document}
+\begin{frame}
+		\titlepage
+\end{frame}
+\begin{frame}
+\frametitle{Outline}
+\tableofcontents
+\end{frame}
+
+
+\begin{frame}
+\begin{block}{Details in the Paper}
+The Topological and Logical Structure of Concurrency and Dependency via Distributive Lattices
+
+Gershom Bazerman, Raymond Puzio
+
+\url{https://arxiv.org/abs/2004.05688}
+\end{block}
+\end{frame}
+
+
+\begin{frame}
+\begin{block}{Disclaimer}
+Everything in sight is assumed to be finite (for now).
+\end{block}
+\end{frame}
+
+\section{Prehistory}
+\begin{frame}
+\frametitle{Petri Nets}
+\includegraphics[width=6cm]{petri}
+\centering
+\linebreak Note: the initial token placement is part of the data.
+\end{frame}
+\begin{frame}
+\frametitle{Prehistory}
+
+"Petri nets, event structures and domains, part I," Mogens Nielsen, Gordon Plotkin, Glynn Winskel (1981)
+
+\begin{itemize}
+\item Causal nets (where each token placement has one move and derives from one move) 
+\linebreak \(\Leftrightarrow\) Simple event structures (posets)
+\linebreak \(\Leftrightarrow\) Prime Algebraic Complete Lattices
+\item Occurrence nets (where each token placement derives from one move, but may have multiple moves)
+\linebreak \(\Leftrightarrow\) Event structures (posets with conflict) 
+\linebreak \(\Leftrightarrow\) Prime Algebraic Coherent Posets
+\end{itemize}
+
+\end{frame}
+\begin{frame}
+\frametitle{Prehistory}
+"Event Structures," Glynn Winskel (1986)
+\begin{itemize}
+\item Safe nets (always at most one token on a given place) have Occurrence nets as a coreflective subcategory.
+\item General event structures ("multiposets" with conflict) have Stable event structures as a subcategory (where when events have two possible causes, those causes conflict).
+\item Stable event structures \linebreak \(\Leftrightarrow\)  Event structures (aka prime event structures).
+\item Safe petri nets \(\Leftrightarrow\) Domains
+\item General event structures are good in their own right! Model CCS, CSP, etc.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Recent history}
+"Configuration Structures, Event Structures and Petri Nets," RJ van Glabbeek and Gordon Plotkin (2009)
+\begin{itemize}
+\item Loop free petri-nets
+\linebreak \(\Leftrightarrow\) Configuration structures (equational)
+\linebreak \(\Leftrightarrow\) Pure Multi-event structures (sets enable sets, no element is on the left and right side of an enablement).
+\linebreak \(\Leftrightarrow\) (extensional) Chu space
+\end{itemize}
+
+Open Question?
+\begin{itemize}
+\item \([?]\) petri-nets
+\linebreak \(\Leftrightarrow\) General event structures
+\end{itemize}
+\end{frame}
+
+
+\section{DSCs}
+
+\begin{frame}[fragile]
+\frametitle{Motivation}
+\begin{equation*}
+\begin{tikzcd}
+                           & A;B                              &                 \\
+PkgA \arrow[ru] &                                  & PkgB \arrow[lu] \\
+                           & No Imports \arrow[lu] \arrow[ru] &
+\end{tikzcd}\end{equation*}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Motivation}
+\begin{equation*}
+\begin{tikzcd}
+                           & A;B                              &                 \\
+PkgA \arrow[ru] \arrow[rr,"?",dashed,shorten <>=10pt,Leftrightarrow] &                                  & PkgB \arrow[lu] \\
+                           & No Imports \arrow[lu] \arrow[ru] &
+\end{tikzcd}\end{equation*}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Dependency data is everywhere}
+\begin{itemize}
+\item Package repositories
+\item Concurrent semantics (Petri nets, CCS, CSP, \(\pi\)-calculus, etc.)
+\item Knowledge representation (proof dependencies, course dependencies, chapter dependencies)
+\end{itemize}
+\begin{block}{Two key questions}
+Two key questions: \textit{compositionality} (external, gros), and \textit{reachability} (internal, petit).
+\end{block}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Our Approach}
+\begin{block}{Dependency Structures with Choice (B., Puzio)}
+Model dependency, \textbf{not} conflict, choice. Nice properties. Relate to locales and constructive logic. Haven't studied composition.
+\end{block}
+\begin{block}{Dependency Structures with Choice and Conflict (B., Puzio)}
+Model dependency, conflict, choice. Future work! Should allow us to relate GES to Directed Topology.
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Pre-DSCs}
+\begin{definition}
+A \textbf{Pre-Dependency Structure with Choice} is a pair \((E, D : E \rightarrow \Pc(\Pc(E)))\) \end{definition}
+\begin{itemize}
+\item \(E\) is thought of as a finite set of events.
+\item \(D\) is thought of as mapping each event to a set of alternative dependency requirements -- i.e. to a predicate in disjunctive normal form.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{DSCs}
+\begin{definition}
+A \textbf{Dependency Structure with Choice} (DSC) is a pre-DSC with \(D\) satisfying appropriate conditions of transitive closure and cycle-freeness.
+\end{definition}
+\(X\) is a \textbf{possible dependency set} of \(e\) if \(X \in D(e)\). An event set \(X\) is a \textbf{complete event sent} if for every element \(e\) there is a possible dependency set \(Y\) of \(e\) such that \(Y \subseteq X\). A pre-DSC is a DSC if every possible dependency set of every element is complete and cycle-free.
+\end{frame}
+
+\begin{frame}
+\frametitle{reachable dependency posets}
+A dependency structure has an associated reachable dependency poset (or ``configuration family") which is a subposet of \(\Pc(E)\) generated by possible dependency sets augmented by their ``parent" and ordered by inclusion. A rdp (when there is no conflict data) has all joins, and is bounded, so therefore is a lattice.
+\begin{block}{a depends on b or c}
+\begin{equation*}
+    \xymatrix@=1em{& abc \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      ab \ar@{-}[d] \ar@{--}[dr] & bc \ar@{-}[dl] \ar@{-}[dr] &
+        ac \ar@{-}[d] \ar@{--}[dl] \\
+%        \underline{b} & \xcancel{a}  & \underline{c} }
+      b \ar@{-}[dr] & \xcancel{a} \ar@{--}[d] & c \ar@{-}[dl] \\
+       & \emptyset &}
+\end{equation*}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{A Motivating Intuition.}
+A rdp is \textit{almost} the frame of opens of a topological space. We would like to see how to consider it as one so that we can analyze dependency structures by topological means.
+\end{frame}
+
+\section{Order-Theoretic Structure}
+
+\begin{frame}
+\frametitle{Definitions}
+\begin{itemize}
+\item A \textbf{Lattice} is a poset with all finite meets (greatest lower bounds) and joins (least upper bounds).
+
+\item A \textbf{Distributive Lattice} is a lattice such that \(x \vee (y \wedge z) = (x \vee y) \wedge (x \vee z)\).
+
+\item finite distributive lattices are one to one with finite frames (finite meets, arbitrary joins, distribution), and hence finite sober spaces.
+
+\item \textbf{\(\Jc(P)\)} is the subposet of the join-irreducible elements (including nullary joins) of \(P\).
+
+\item \textbf{\(\Oc(P)\)} is the distributive lattice generated by the downsets of \(P\) under inclusion.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Some order theory}
+\begin{figure}
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix@=1em{& \top \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      a \ar@{-}[dr] & b \ar@{-}[d] & c \ar@{-}[dl]  \\
+       & \bot &}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix@=1em{& \top \ar@{-}[ddl] \ar@{-}[dr] & \\
+      & & b'  \ar@{-}[d]  \\
+      a \ar@{-}[dr] & & b \ar@{-}[dl] \\
+      & \bot &}
+\end{equation*}
+\end{minipage}
+\end{figure}
+
+The non-distributive lattice \(M_3\), aka the ``chinese lantern'', and the non-distributive, non-modular lattice \(N_5\), the pentagon.
+
+% TODO: rdp(E,D) is either distributive _or_ upper-semimodular but not modular!. Correspondence is 1-1 up to relabling.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{The order-theoretic structure of DSCs}
+Some characterizations from Birkhoff
+\begin{itemize}
+\item Lattices are distributive iff they contain neither \(M_3\) nor \(N_5\).
+\item Lattices are modular iff they don't contain \(N_5\).
+\item Finite lattices are upper semimodular iff when two items are covered by their meet, they cover their join.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{The order-theoretic structure of DSCs}
+\begin{figure}
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix{& \top \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      ab \ar@{-}[d]& bc \ar@{-}[dl] \ar@{-}[dr] &
+        ac \ar@{-}[d]  \\
+        b \ar@{-}[dr]  & & c \ar@{-}[dl] \\
+        & \bot &
+        } 
+%      b \ar@{-}[dr] & \xcancel{a} \ar@{--}[d] & c \ar@{-}[dl] \\
+%       & \emptyset &}
+\end{equation*}
+\end{minipage}
+\end{figure}
+
+The lattice generated as the \(rdp\) of a simple dependency structure with choice, where \(a\) may depend on \(b\) or \(c\). This is an instance of the lattice \(S_7\), the ``centered hexagon''. A lattice that is upper semimodular but not modular must contain as a cover-preserving sublattice \(S_7\).
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Sketch of why \(rdp\) is upper semimodular}
+\begin{figure}
+\begin{tikzcd}
+                                  & a \vee b &                                                                                                                     &  &                                   &            &                                   \\
+a \arrow[ru, no head, squiggly] &          & b \arrow[lu, no head, squiggly] \arrow[ll, "same\ grade \ (cardinality)", no head, dotted] \arrow[rr, Rightarrow] &  & a \arrow[rd, no head, squiggly] &            & b \arrow[ld, no head, squiggly] \\
+                                  &          &                                                                                                                     &  &                                   & a \wedge b &                                  
+\end{tikzcd}
+\end{figure}
+Sets of the same grade with a union in the next grade necessarily differ by exactly one element each. They necessarily then cover their meet, which will be the first valid set less than or equal to their intersection. Further if sets are not in the same grade, with a union in the next grade, they are not covered by their join.
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Sketch of why \(rdp\) lacks \(M_3\)}
+\begin{figure}
+\begin{equation*}
+    \xymatrix@=1em{& \top \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      a \ar@{-}[dr] & b \ar@{-}[d] & c \ar@{-}[dl]  \\
+       & \bot &}
+\end{equation*}
+\end{figure}
+To contain \(M_3\) as a sublattice, there must be three relatively unordered elements where any two elements join to the join of all three, and dually for meets. But if three elements have a common meet, they all differ by distinct events. Thus, since joins are freely generated by union, then the joins must differ.
+\end{frame}
+
+\begin{frame}
+\frametitle{A poset representation theorem for DSCs}
+\begin{theorem}
+(B., Puzio) There exists a map \textbf{uds} (underlying dependency structure) from upper semimodular lattices without \(M_3\) as a sublattice to DSCs such that  \(rdp \circ uds\) is the identity, and \(uds \circ rdp\) is an equivalence up to renaming.
+\end{theorem}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Bruns-Lakser for posets, finite case}
+
+\begin{theorem}
+(B., Puzio, after MacNeille) For a finite poset, the injective hull (distributive envelope) may be constructed as \(\Oc(\Jc(P)))\), with an injection that sends join-irreducible elements to their downsets, and composite elements to the union of their join-irreducible basis. Furthermore,
+
+\begin{equation*}
+\begin{tikzcd}
+\BLc(P) \arrow[r, "!",dashed]            & D \\
+P \arrow[u, hook] \arrow[ru, "f"'] &
+\end{tikzcd}
+\end{equation*}
+
+\end{theorem}
+
+Corollary: (Finite) distributive lattices are a reflective subcategory of (finite) posets with ``distributive" morphisms (all existing meets, "distributive" joins).
+\end{frame}
+
+\begin{frame}
+\frametitle{BL is idempotent, and meaningful}
+\begin{figure}
+\begin{minipage}[c]{0.4\textwidth}
+\begin{equation*}
+    \xymatrix{& abc \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      \underline{ab} \ar@{-}[d] \ar@{--}[dr] & bc \ar@{-}[dl] \ar@{-}[dr] &
+        \underline{ac} \ar@{-}[d] \ar@{--}[dl] \\
+        \underline{b} & \xcancel{a}  & \underline{c} }
+%      b \ar@{-}[dr] & \xcancel{a} \ar@{--}[d] & c \ar@{-}[dl] \\
+%       & \emptyset &}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[c]{0.08\textwidth}
+  \begin{equation*}
+    \xymatrix{\ar@2{~>}[r]^{\Mcc} &}
+  \end{equation*}
+\end{minipage}
+\begin{minipage}[c]{0.4\textwidth}
+\begin{equation*}
+    \xymatrix{& a_ba_cbc \ar@{-}[dl] \ar@{-}[dd] \ar@{-}[dr] & \\
+      \mathbf{a_bbc} \ar@{-}[d] \ar@{-}[dr] & &
+        \mathbf{a_cbc} \ar@{-}[d] \ar@{-}[dl]\\
+        \underline{a_bb} \ar@{-}[d] & bc \ar@{-}[dl] \ar@{-}[dd] \ar@{-}[dr] &
+          \underline{a_cc} \ar@{-}[d] \\
+         \underline{b} \ar@{-}[dr] & & \underline{c} \ar@{-}[dl] \\
+      & \mathbf{\emptyset} }
+\end{equation*}
+\end{minipage}
+\end{figure}
+\end{frame}
+
+\section{Locales}
+\begin{frame}
+\frametitle{Definitions}
+A \textbf{Heyting algebra} is a lattice with a unique top and bottom element, and a special ``implication" operation called the \textbf{relative pseudo-complement} (\(a \rightarrow b\)) which yields the unique greatest element \(x\) such that \(a \wedge x \le b\). A \textbf{complete Heyting algebra} is a Heyting algebra such that it is also a complete lattice. Finite distributive lattices are one-to-one with finite Heyting algebras.
+
+A \textbf{frame} is a complete Heyting algebra, considered in a category where morphisms preserve finite meets and arbitrary joins. A \textbf{locale} is a frame, but in a category with morphisms reversed. \(FinLoc = FinFrm^{op} = FinDLat^{op}\)
+\end{frame}
+
+\begin{frame}
+A nucleus:
+\begin{itemize}
+\item endofunction
+\item preserves meets
+\item idempotent
+\item contractive (monotone)
+\end{itemize}
+
+A nucleus on a frame yields a frame surjection to the quotient frame of fixpoints.
+\end{frame}
+
+\begin{frame}
+Locales let us relate logics and spaces. Nucleii let us relate modal logics (with a ``possibility" operator) and topologies.
+\end{frame}
+
+\begin{frame}
+\frametitle{The BL-topology}
+\begin{lemma}
+There exists a \textbf{Bruns-Lakser topology} on a finite locale, which is the least nucleus with \(\Jc(\Jc(L)\) as fixedpoints.
+\end{lemma}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Localic presentations of DSCs}
+
+\begin{theorem}
+The set of DSCs is one-to-one with the set of finite posites generated by downsets of upper semimodular lattices without \(M_3\), and equipped with the Bruns-Lakser topology.
+\end{theorem}
+
+Questions
+\begin{itemize}
+\item What morphisms do we need to define to extend this to an equivalence of categories?
+\item What is the correct characterization (logical, topological) of a distributive lattice generated by a lattice of join-irreducibles?
+\end{itemize}
+
+\end{frame}
+
+\section{Homology (?)}
+\begin{frame}
+\frametitle{Work In Progress}
+
+\begin{figure}
+\begin{equation*}
+    \xymatrix@=1em{& abc \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      ab \ar@{-}[d] \ar@{-}[dr] & ac \ar@{-}[dl] \ar@{-}[dr] &
+        bc \ar@{-}[d] \ar@{-}[dl] \\
+      a \ar@{-}[dr] & b \ar@{-}[d] & c \ar@{-}[dl] \\
+       & \emptyset &}
+\end{equation*}
+\end{figure}
+
+A powerset lattice may be considered as:
+\begin{itemize}
+\item a distributive (graded) lattice
+\item the frame of opens of a space
+\item a simplicial complex
+\item the face lattice of a simplicial sphere (?)
+\item the data of an exact chain complex of free abelian groups
+\end{itemize} 
+\end{frame}
+
+\begin{frame}
+\frametitle{The General Idea}
+
+\begin{figure}
+\begin{equation*}
+    \xymatrix@=1em{& abc \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      ab \ar@{-}[d] \ar@{-}[dr] & ac \ar@{-}[dl] \ar@{-}[dr] &
+        bc \ar@{-}[d] \ar@{-}[dl] \\
+      a \ar@{-}[dr] & b \ar@{-}[d] & c \ar@{-}[dl] \\
+       & \emptyset &}
+\end{equation*}
+\end{figure}
+
+\(abc \to ab - ac + bc\)
+
+\(ab \to a - b, ac \to a - c, bc \to b - c\)
+
+If \(a\) conflicts with \(c\) then we formally set \(a - c = 0\)
+
+No longer exact, still a chain complex.
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{The Problem}
+
+\begin{figure}
+\begin{equation*}
+    \xymatrix@=1em{& abc \ar@{-}[dl]  \ar@{-}[dr] & \\
+      ab  \ar@{-}[dr] &   &
+        bc \ar@{-}[d] \ar@{-}[dl] \\
+       & b \ar@{-}[d] & c \ar@{-}[dl] \\
+       & \emptyset &}
+\end{equation*}
+\end{figure}
+
+If \(a\) depends on \(b\) then this no longer satisfies the chain condition.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{The Solution?}
+
+\begin{figure}
+\begin{equation*}
+    \xymatrix@=1em{& abc \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      ab  \ar@{-}[dr] & c' \ar@{-}[dr]  &
+        bc \ar@{-}[d] \ar@{-}[dl] \\
+       & b \ar@{-}[d] & c \ar@{-}[dl] \\
+       & \emptyset &}
+\end{equation*}
+\end{figure}
+
+"pull up" a copy of \(c\). (i.e. send \(a\) without \(b\) formally to 0).
+
+\end{frame}
+
+
+\section{Free Distributive Lattices}
+\begin{frame}
+\frametitle{Internal Logics}
+Internal logic of the locale of a DSC  -- i.e., \(\BLc(E,D)\)
+\begin{itemize}
+\item Atoms = ``events with traces"
+\item Objects = traced event sets
+\item \(\&\) = intersection
+\item \(||\) = union
+\end{itemize}
+
+Not the logic we want! (It is a logic ``of" states rather than ``about" states).
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item A set \(S\) is \textit{redundant} with regards to \(T\) if \(T \subset S\).
+\item The irredundency quotient is a nucleus, and the double powerset lattice, quotiented by irredundancy, is the free distributive lattice.
+\item This gives positive formulae in disjunctive normal form, quotiented by all laws of first order intuitionistic logic.
+\item This is equivalent to the lattice \(\Ucc(\Oc(S))\) (upsets of downsets).
+\item This construction extends from sets to posets.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{The Free Distributive Lattice of a DSC}
+
+\begin{itemize}
+\item Atoms = ``events with traces"
+\item Objects = \textbf{Sets of} traced event sets (as formulae in dnf)
+\item \(\&\) = actual logical conjunction
+\item \(||\) = actual logical disjunction
+\end{itemize}
+
+This \textbf{is} the logic you're looking for.
+
+\end{frame}
+
+\section{Dependency Problems}
+\begin{frame}
+\begin{definition}
+A dependency problem in a DSC \((E,D)\) is the pair of a formula \(\phi\) in \(\UMc(E,D)\) and a monotone increasing (i.e. growing as further elements are added to the source set) objective function of type \(\Pc(E) \rightarrow \mathbb{R}\). A solution to such a problem is an event set which satisfies the formula and minimizes the objective function.
+\end{definition}
+
+Observation: Detecting \textit{compatible} event sets can be formulated as a dependency problem.
+\end{frame}
+
+\begin{frame}
+The cost of solving a dependency problem over a poset is bounded by the maximum number of disjuncts in a normalized dnf formula over that poset. This is the same as the maximal antichain in the downsets of that poset -- i.e. the \textbf{width} (\(\Wf\)).
+
+\begin{theorem}
+\textbf{(Sperner, 1928)}: The powerset of a set with \(n\) elements, under inclusion ordering, has a width of \(\binom{n}{\ceil{n/2}}\).
+\end{theorem}
+\end{frame}
+
+\begin{frame}
+
+\begin{lemma}
+\textbf{Stanley's Width Lemma (2019)}: The width of a poset constructed as the product of \(n\) chains, each of length \(l_n\) is the maximal coefficient of \((1+x...x^{l_1})*(1+x...x^{l_2})...*(1+x...x^{l_n})\)
+\end{lemma}
+
+\begin{theorem}
+(B., Puzio): Define \(\Mf(a,b)\) as the central (maximal) coefficient of the formal polynomial expansion of \((1 + x + x^2 ... + x^a)^b\). Define \(\Hf(P)\) as the height of a poset, i.e. the length of its longest chain. Given any poset \(P\), then:
+\begin{equation*}
+ \Wf(\Oc(P)) \le \Mf(2,\Wf(P)) * \Mf(\Hf(P),\ceil{\Wf(P)/2})
+\end{equation*}
+\end{theorem}
+\end{frame}
+
+
+\begin{frame}[allowframebreaks]
+        \frametitle{References}
+         \nocite{*}
+        \bibliographystyle{amsalpha}
+	\bibliography{act-ucr-slides}
+\end{frame}
+
+
+\begin{frame}
+\begin{definition}
+A \textbf{version parameterization} of a DSC is an idempotent endofunction on events, from lower to higher, where for every possible dependency set of every event, there is another possible dependency set of that event where the lower versions have been substituted for higher versions. Idempotency here translates into the condition that no higher event is itself a lower event of something else.
+
+A \textbf{poset version parameterization} is the induced endofunction on a reachable dependency poset generated by a version parameterization on a DSC
+\end{definition}
+
+\end{frame}
+
+\begin{frame}
+\begin{lemma}
+Every poset version parameterization is a nucleus that in addition preserves existing joins.
+\end{lemma}
+
+\begin{theorem}
+A \textbf{ponucleus} is an idempotent monotone endofunction on a poset which preserves existing finite meets.
+Given a join-preserving ponucleus \(j\), on a finite poset \(P\),  \(\BLc(j)\) is a nucleus on \(\BLc(P)\)
+\end{theorem}
+
+Corollary: given a DSC \((E,D)\) and a version parameterization with an induced poset version parameterization \(p\), then \(\BLc(p)\) is a nucleus on \(\BLc(E,D)\).
+\end{frame}
+
+
+\end{document}
