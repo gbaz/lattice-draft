@@ -1,0 +1,491 @@
+
+\documentclass[a4paper,USenglish,cleveref, autoref, thm-restate,authorcolumns]{lipics-v2019}
+%This is a template for producing LIPIcs articles. 
+%See lipics-manual.pdf for further information.
+%for A4 paper format use option "a4paper", for US-letter use option "letterpaper"
+%for british hyphenation rules use option "UKenglish", for american hyphenation rules use option "USenglish"
+%for section-numbered lemmas etc., use "numberwithinsect"
+%for enabling cleveref support, use "cleveref"
+%for enabling autoref support, use "autoref"
+%for anonymousing the authors (e.g. for double-blind review), add "anonymous"
+%for enabling thm-restate support, use "thm-restate"
+
+%\graphicspath{{./graphics/}}%helpful if your graphic files are in another directory
+
+\bibliographystyle{plainurl}% the mandatory bibstyle
+
+
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% TeX will automatically convert eps --> pdf in pdflatex
+\usepackage{amssymb}
+\usepackage{xypic}
+\usepackage{cancel}
+\usepackage{mathtools}
+\usepackage{tikz-cd}
+
+%------------------------------------------------
+%            Symbols in "mathcal"
+%------------------------------------------------
+
+\newcommand{\UBLc}{\mathcal{UBL}}
+\newcommand{\Wc}{\mathcal{W}}
+\newcommand{\Oc}{\mathcal{O}}
+\newcommand{\Pc}{\mathcal{P}}
+\newcommand{\Ucc}{\mathcal{U}}
+\newcommand{\Jc}{\mathcal{J}}
+\newcommand{\Cc}{\mathcal{C}}
+\newcommand{\Lcc}{\mathcal{L}}
+\newcommand{\Dcc}{\mathcal{D}}
+\newcommand{\BLc}{\mathcal{BL}}
+
+\newcommand{\band}{\mathop{\&}}
+\newcommand{\bor}{\mathop{|}}
+\newcommand{\Dia}{\diamondsuit}
+
+% TODO pick font better than mathfrak for combinatorial operators
+
+\newcommand{\Mf}{\mathfrak{m}} 
+\newcommand{\Sf}{\mathfrak{s}}
+\newcommand{\Wf}{\mathfrak{w}}
+\newcommand{\Hf}{\mathfrak{h}}
+
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+
+\title{Order-Theoretic Properties of Conflict-Free General Event Structures}
+
+
+\author{Gershom Bazerman}{Awake Security, Santa Clara, USA}{gershomb@gmail.com}{}{}
+
+\author{Raymond Puzio}{Albert Einstein Institute, USA}{rspuzio@gmail.com}{}{}
+
+
+\authorrunning{G. Bazerman and R. Puzio} %TODO mandatory. First: Use abbreviated first/middle names. Second (only in severe cases): Use first author plus 'et al.'
+
+\Copyright{Gershom Bazerman and Raymond Puzio} %TODO mandatory, please use full first names. LIPIcs license is "CC-BY";  http://creativecommons.org/licenses/by/3.0/
+
+\ccsdesc[100]{\textcolor{red}{Replace ccsdesc macro with valid one}} %TODO mandatory: Please choose ACM 2012 classifications from https://dl.acm.org/ccs/ccs_flat.cfm 
+
+\keywords{Dummy keyword} %TODO mandatory; please add comma-separated list of keywords
+
+\category{} %optional, e.g. invited paper
+
+\relatedversion{} %optional, e.g. full version hosted on arXiv, HAL, or other respository/website
+%\relatedversion{A full version of the paper is available at \url{...}.}
+
+\supplement{}%optional, e.g. related research data, source code, ... hosted on a repository like zenodo, figshare, GitHub, ...
+
+%\funding{(Optional) general funding statement \dots}%optional, to capture a funding statement, which applies to all authors. Please enter author specific funding statements as fifth argument of the \author macro.
+
+% \acknowledgements{The initial impetus for this research grew out of many interesting conversations with Herbert Valerio Riedel regarding package repository semantics. The need to render these ideas more formal was due to the careful interrogation of Simon Peyton-Jones. Jonas Frey first pointed out to us the relationship to event structures. As this work has developed, it has relied on the constant input of participants in the NY Category Theory seminar.}%optional
+
+%\nolinenumbers %uncomment to disable line numbering
+
+%\hideLIPIcs  %uncomment to remove references to LIPIcs series (logo, DOI, ...), e.g. when preparing a pre-final version to be uploaded to arXiv or another public repository
+
+%Editor-only macros:: begin (do not touch as author)%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\EventEditors{John Q. Open and Joan R. Access}
+\EventNoEds{2}
+\EventLongTitle{42nd Conference on Very Important Topics (CVIT 2016)}
+\EventShortTitle{CVIT 2016}
+\EventAcronym{CVIT}
+\EventYear{2016}
+\EventDate{December 24--27, 2016}
+\EventLocation{Little Whinging, United Kingdom}
+\EventLogo{}
+\SeriesVolume{42}
+\ArticleNo{23}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We study Winskel's general event structures and their associated families of configurations, in the special case where no conflicts exist. We show these families of configurations, considered under the inclusion ordering, are necessarily upper-semimodular lattices that do not contain \(M_3\) as a sublattice -- i.e. they are either distributive, or upper-semimodular but not modular. We further establish that there is a full correspondence, up to renaming, between lattices of this form and (canonicalized) general event structures without conflict. Further, we develop how such lattices have a meaningful idempotent completion into distributive lattices, and use this to develop a precise correspondence between general event structures without choice and a certain class of locales, which in turn yields a way to reason in the "internal logic" of such event structures. Finally, we discuss why such constructions are of interest in understanding certain common encodings of concurrency-like phenomena.
+\end{abstract}
+
+
+\section{Introduction}
+We became interested in event structures as a proper way to model a variety of concurrency-like phenomena in computation, in particular package management. In such circumstances, the classic characterization of families of configurations as Scott domains \cite{winskel1986event} is of limited use. Such a characterization allows us to relate families to one another through their embedding in a category of domains. But we are interested reasoning about the relationships of sets of configurations within a single family. This set us on a search for further characterizations of such families, the results of which are recorded in this paper. The work thus far addresses the simplified case where no conflicts exist (which we term a Dependency Structure with Choice), about which there is already much to say.
+
+\section{Dependency Structures with Choice}
+
+We begin our analysis with an algebraic definition of dependency structures.
+
+\begin{definition}
+A \textbf{Pre-Dependency Structure with Choice} is a pair \((E, D : E \rightarrow \Pc(\Pc(E)))\) where \(E\) is a finite set of events, and \(D\) is a non-nullary mapping from \(E\) to its double powerset, to be interpreted as mapping each event to a set of alternative dependency requirements -- i.e. to a predicate in disjunctive normal form ranging over variables drawn from \(E\).
+\end{definition}
+
+\begin{definition}
+A \textbf{Dependency Structure with Choice} (DSC) is a pre-DSC with \(D\) satisfying  appropriate conditions of transitive closure and cycle-freeness. We define \(X\) as a \textbf{possible dependency set} of \(e\) if \(X \in D(e)\). We call an event set \(X\) a \textbf{complete event set} if for every element \(e\) there is a possible dependency set \(Y\) of \(e\) such that \(Y \subseteq X\). A pre-DSC is a DSC if every possible dependency set of every element is complete, and no possible dependency set of any element contains the element itself. Pre-DSCs may be completed into DSCs by repeatedly taking transitive completion of possible dependency sets (with regards to each transitive possible dependency set) and then deleting cyclic sets (and elements whose possible dependency set becomes empty under this process) until a fixpoint is (necessarily, by induction) reached.
+\end{definition}
+
+A pre-DSC is precisely the data of a general event structure, when the consistency predicate (set of consistent subsets of \(E\)) corresponds to the powerset \(\Pc(E)\). A DSC is a canonicalized form of the same thing, which is more convenient to work with, and which will allow the establishment of a precise correspondence to a subclass of lattices. The data of a general event structure could be fully expressed if we equipped these with a consistency predicate alongside the existing structure.
+
+\subsection{Reachable Dependencies Posets of a DSC}
+
+\begin{definition} The \textbf{reachable dependency poset} of a DSC is the result of an operation, \(rdp\), which sends DSCs to bounded posets (i.e. posets with top and bottom elements) by the following procedure:  We take as elements all collections of events, i.e. \(\Pc(E)\), and impose the least order relation such that one collection of events, \(X\), is above another, \(Y\), if \(Y \subset X\) and for every element of \(X\), there is a possible dependency set contained in \(Y\).  The conditions of transitivity and cycle-freeness ensure that under such an ordering, every event will lie above the empty event set. We refer to event sets that exist in this poset as \textbf{reachable event sets}.
+\end{definition}
+
+Informally, a reachable dependency set is generated by asking ``for each event, what are the basic (reachable) event sets which contain it'', and then completing those by the empty set and all unions of this basis.  As a graph, nodes of a reachable dependency poset correspond to complete event sets, and edges correspond to linear accretion of event sets over time by addition of subsequent events. Consequently, a reachable dependency poset may also be seen as generated by considering all possible dependency sets of all events, augmenting each with the event itself, and then, under the inclusion ordering, augmenting the result with the empty set and in addition all possible joins. This satisfies the universal property as given in the above definition.
+
+It follows that for any DSC \((E,D)\), \(rdp((E,D))\)  is a subposet of \(\Pc(E)\), which has all joins as unions. Further, as a bounded poset with all joins, by the adjoint functor theorem for posets, it also has all  meets, and is hence a lattice. However, importantly, meets do not correspond to intersections. Consider a DSC containing an event \(a\), which depends on either \(b\) or \(c\). \(\{a,b\}\) and  \(\{a,c\}\) are reachable event sets, but their intersection, \(\{a\}\), is not. The meet of two reachable event sets is the greatest reachable event set that is a subset of their intersection. This necessarily exists, and is generated by taking the union of all reachable subsets of the intersection. Note that this reduction operation preserves joins of reachable event sets, but not necessarily joins of \textit{all} event sets. As a syntactic convenience, when we denote operations whose domain is a lattice on a DSC, we implicitly pass through the reachable dependency poset construction.
+
+The elements of \(rdp\) of a DSC are typically known as the family of configurations of an event structure. We choose the name \(rdp\) to emphasize this operation does not yield a collection of sets, but yields a poset -- i.e., it remembers the order theoretic structure, but forgets the "internal" structure of individual elements of the poset (i.e. that they correspond to sets of events under the inclusion ordering).
+
+If we consider DSCs as an algebraic ``signature'', then RDPs provide the models of this signature. As we shall see, the connection between this algebraic structure and its order-theoretic models can be made precise through a representation theorem.
+
+\section{Distributive Lattices and the Idempotent Distributive Lattice Completion}
+
+We review here some basic facts and notation regarding order theory and lattices.
+
+A \textbf{partially ordered set} or poset, \(P\) is a set equipped with a partial order relation \(\le\), which is transitive, reflexive, and antisymmetric . A morphism of posets is an order-preserving function on their elements. Posets form the category \(Pos\) and finite posets form the subcategory \(FinPos\). Two posets are equivalent when they are equivalent as objects of \(Pos\). Posets have a standard partial order on them such that \(P \le Q\) when there exists an order-preserving embedding \(P \rightarrow Q\).
+
+A \textbf{lattice}, \(L\) is poset for which every two elements have a unique greatest lower bound, their \textbf{meet} (\(\wedge\)) and a unique least upper bound, their \textbf{join} (\(\vee\)). The join and meet operations of a lattice are necessarily commutative, associative, and idempotent. A morphism of distributive lattices is a morphism of posets which also preserves meets and joins. A \textbf{join-semilattice} and \textbf{meet-semilattice} are posets that respectively have all finite joins or all finite meets. A \textbf{complete lattice} is a lattice which has joins and meets of infinitary as well as finitary collections of elements. We write \(\bigwedge\) and \(\bigvee\) for the meet and join operations as applied to an entire set of elements. By abuse of notation, we also may write, e.g., \(x \vee S\) where \(x\) is an element of a poset and \(S\) is a set of elements, to indicate the lifting of application of the unary operation \(x \vee -\) to every element in the set.
+
+A \textbf{distributive lattice}, is a lattice satisfying the additional property that for all \(x, y, z\) in \(L\), \(x \vee (y \wedge z) = (x \vee y) \wedge (x \vee z)\). If this condition (join distributing over meet) is satisfied, then the dual condition (meet distributing over join) is also satisfied.  Lattice homomorphisms between distributive lattices are necessarily distributive lattice homomorphisms. Distributive lattices form the category \(DLat\) and finite distributive lattices form the subcategory \(FinDLat\). In \(FinDLat\), all lattices necessarily have a unique top and bottom element (i.e. are bounded). As such, morphisms in \(FinDLat\) also preserve top and bottom elements as the nullary join and meet.
+
+A \textbf{join-irreducible} element of a poset is an element \(x\) such that no collection of elements not including \(x\) has \(x\) as its join. The operation \(\Jc(P)\) sends a poset to the sub-poset of its join-irreducible elements, sharing the same order relation. We refer to elements of a poset which are not join-irreducible as \textbf{composite} elements, and the set of join-irreducible elements which joins to them as their \textbf{basis}. Note that if a poset has a globally least element, that element is not join-irreducible, since it is the nullary join. However, if a poset has more than one locally least element (i.e. element with no element below it), then all such elements are join-irreducible. Also note that if an element is join-irreducible in \(P\), it still may nonetheless become a join in the restriction to \(\Jc(P)\).
+
+A \textbf{downset} of a poset is a set of elements of the poset which is downwardly-closed -- i.e. for which \(x \in S \band y \le x \implies y \in S\). The operation \(\Oc(P)\) sends a poset to the poset of its downsets, ordered by inclusion. Such a poset has meets and joins as respectively intersection and union, and consequently is a distributive lattice. Further, \(\Oc(P)\) is a morphism (and in fact an embedding) of posets, which sends each \(x \in P\) to the set \(\{y \mathbin{|} y \le x\}\).
+
+A \textbf{Heyting algebra} is a lattice with a unique top and bottom element, and a special ``implication'' operation called the \textbf{relative pseudo-complement} (\(a \rightarrow b\)) which yields the unique greatest element \(x\) such that \(a \wedge x \le b\). A \textbf{complete Heyting algebra} is a Heyting algebra such that it is also a complete lattice. The category of complete Heyting algebras takes as morphisms monotone functions which preserve finite meets, arbitrary joins, and implication.
+
+A \textbf{frame} is a complete Heyting algebra. However, the category \(Frm\) of frames takes as morphisms monotone functions which preserve finite meets and arbitrary joins, but not necessarily implication. The relative pseudo-complement operation derived from finite meets and arbitrary joins necessarily exists in frames, but may not commute with any given frame homomorphism. In the finitary case, distributive lattices and complete Heyting algebras coincide, and hence \(FinFrm = FinDLat\).
+
+A \textbf{locale} is again the same thing as a frame. However, in the category \(Loc\) of locales, morphisms are viewed reversed, and hence \(Loc = Frm^{op}\) and \(FinLoc = FinFrm^{op} = FinDLat^{op}\)
+
+In passing, we will make use of Birkhoff duality, which we recall here as well.
+
+\textbf{Thm. (Birkhoff duality)}: When L is a finite distributive lattice, \(\Oc(\Jc(L)))\) is an equivalence, and for any finite poset P,  \(\Jc(\Oc(P)))\) is an equivalence. Further, this equivalence extends to a functorial equivalence between the categories \(FinPos\) and \(FinDLat\), with monotone functions on posets corresponding to homomorphisms of distributive lattices. As a consequence, all finite locales may be viewed in terms of their underlying posets.
+
+
+\subsection{The General Relationship between DSCs and Lattices}
+Given that every DSC induces a finite lattice, it is reasonable to ask the general relation between finite lattices and DSCs. 
+
+First, we consider the lattices induced by dependency structures with no choice -- i.e. where every event has a single possible dependency set. In such a case, the dependency structure contains precisely the same data as a poset. The reachable dependency poset of such a structure is generated by considering down-closed sets of events -- i.e. those where each event can occur only if all its dependencies occur. By Birkhoff duality, this is a distributive lattice, and thus choice-free dependency structures are equivalent to distributive lattices.
+
+When choice appears, we must therefore land in non-distributive lattices. Birkhoff showed that there are two canonical ways in which a lattice can fail to be distributive -- through containing as a sublattice the ``forbidden configurations'' \(M_3\) or \(N_5\) (Figure \ref{Fig2}). Possibly containing \(N_5\) but not containing \(M_3\) corresponds to the weaker logical property of modularity. As we shall see below, it is impossible for the \(rdp\) construction to generate \(M_3\) as a sublattice. However, in the running example we have used of a nontrivial DSC (where \(a\) depends on \(b\) or \(c\)), the lattice \(S_7\) is generated (Figure \ref{Fig3}). This lattice contains two copies of \(N_5\) as a sublattice (the one generated by excluding \(bc\) and \(c\) and the one generated by excluding \(bc\) and \(b\)). Furthermore, it is the canonical example of a lattice which fails to be modular, but nonetheless satisfies the still weaker upper semimodularity condition. In fact, a lattice that is upper semimodular but not modular must contain as a cover-preserving sublattice \(S_7\)  \cite{stern1999semimodular}. 
+
+\begin{figure}
+\centering
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix@=1em{& \top \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      a \ar@{-}[dr] & b \ar@{-}[d] & c \ar@{-}[dl]  \\
+       & \bot &}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix@=1em{& \top \ar@{-}[ddl] \ar@{-}[dr] & \\
+      & & b'  \ar@{-}[d]  \\
+      a \ar@{-}[dr] & & b \ar@{-}[dl] \\
+      & \bot &}
+\end{equation*}
+\end{minipage}
+
+\caption{The non-distributive lattice \(M_3\), aka the ``chinese lantern'', and the non-distributive, non-modular lattice \(N_5\), the pentagon.}
+\label{Fig2}
+\end{figure}
+
+
+\begin{figure}
+\centering
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix{& \top \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      ab \ar@{-}[d]& bc \ar@{-}[dl] \ar@{-}[dr] &
+        ac \ar@{-}[d]  \\
+        b \ar@{-}[dr]  & & c \ar@{-}[dl] \\
+        & \bot &
+        } 
+%      b \ar@{-}[dr] & \xcancel{a} \ar@{--}[d] & c \ar@{-}[dl] \\
+%       & \emptyset &}
+\end{equation*}
+\end{minipage}
+\caption{The lattice generated as the \(rdp\) of a simple dependency structure with choice, where \(a\) may depend on \(b\) or \(c\). This is an instance of the lattice \(S_7\), the ``centered hexagon''.}
+\label{Fig3}
+\end{figure}
+
+It turns out that when the lattices generated by \(rdp\) fail to be distributive, they do so precisely by containing copies of \(S_7\) -- i.e. they are upper semimodular, but not modular. That is to say that the generated lattices fail to be distributive \textit{only} by also failing to be modular, but do not fail so badly that they cease to be upper semimodular. Not only does \(rdp\) land precisely in this class of lattices, but it lands so precisely that we can construct an inverse, and a full equivalence.
+
+\begin{theorem}
+\label{representation}
+There exists a map \textbf{uds} (underlying dependency structure) from upper semimodular lattices without \(M_3\) as a sublattice to DSCs such that  \(rdp \circ uds\) is the identity, and \(uds \circ rdp\) is an equivalence up to renaming.
+\end{theorem}
+
+\begin{proof}
+First, we show that \(rdp\) only generates upper semimodular lattices without \(M_3\) as a sublattice. Next, we construct an inverse, and show that on such lattices, it is the identity.
+
+We know the generated lattice is upper semimodular by following Birkhoff's condition for weak semimodularity (which corresponds to semimodularity in the finite case). An element is defined to cover another element if it is greater than that element, and there is no intervening element between them. A finite lattice is semimodular iff for each pair of elements which are both covered by their join, they both cover their meet. In the case of the \(rdp\) construction, an event set covers another event set precisely when it differs by adding a single event. So for two elements to be covered by their join, they must each share all events save one. Necessarily, then, they will cover their meet, which is the unique greatest complete event set which is less than or equal to their intersection.
+
+Next, we demonstrate that \(rdp\) must generate lattices that are free of \(M_3\). If a lattice has \(M_3\) as a sublattice, then it must contain three elements that are relatively unordered and for which any two elements will join to the join of all three. Further, for these three elements, their meets must fulfill the dual condition. Now, assume three elements have a common meet. Then, they must each differ by distinct events.  Their joins are freely generated by union, and thus they must have three different joins, and therefore the desired construction is impossible.
+
+Now, we construct \(uds(L)\) in two steps, first establishing the ``free'' DSC \(FD\) on the lattice \(L\), and then identifying events which are the ``same''. \(FD(L)\) has an event set consisting of the join-irreducible elements of \(L\), and as dependencies singleton sets freely generated by the ordering relation on the elements.  I.e. \(FD(L) = (\Jc(L), x \mapsto \{\{ y \in \Jc(L) \mid y<x\}\})\). To identify two events is to substitute all references for first to the second, and further, to define the new collection of possible dependency sets of the first to be the union of the existing collections given by both events. We denote a DSC \(D\) with two events, \(a\) and \(b\) identified as  \(D/[a\sim b]\). The set \(Q(L)\) consists of pairs of join-irreducible elements \((a,b)\) such that  \(\exists\, x \in L . \,  x < a \vee b \band x \vee a = x \vee b = a \vee b\). (Note here that \(x\) need not be join-irreducible). Now, \(uds(L) = FD(L)/[a \sim b,a' \sim b',...]\) for all \((a,b), (a',b'), ...\in Q(L)\).
+
+Finally, we show that \(rdp \circ uds\) is the identity. When the source lattice is distributive, then the quotient operation trivializes (in a distributive lattice, joins are necessarily unique, and hence \(Q(L)\) is empty). Therefore, by Birkhoff duality, we have the identity. When the source lattice fails to be distributive, we know that it does not have \(M_3\) as a sublattice, and it is upper semimodular. As discussed above, a lattice that is upper semimodular but not modular must contain as a cover-preserving sublattice \(S_7\), precisely our running example. An instance of \(S_7\) then results in an element of Q(L). For example, in Fig. \ref{Fig3},  we have the pair \((ab,ac)\), and there exists an \(x\) given by \(bc\) satisfying the desired condition (i.e. it is less than the join of the pair, and joining it with any element of the pair is equal to the join of the pair). Given a pair in \(Q(L)\), considered as two event sets, the existence of a third ``unifying'' element (necessarily unordered with regards to them) could come about in two ways. Firstly, it could be a join irreducible element. But that would induce as a sublattice \(M_3\), because all three elements would share the same join, and furthermore they must share the the same meet (otherwise that element would be reducible as the join of the distinct meets). Therefore the element is necessarily join reducible, and since it must be unordered with regards to the pair, it must be the join of two elements below the pair. Now, in the \(rdp \circ uds\) roundtrip, this ``unifying'' element will be discarded by \(uds\) because it is join reducible, and reconstructed by \(rdp\). Furthermore, the two ``unified'' elements will be quotiented into a single event with two possible dependency sets in one direction, and then ``exploded'' back into two distinct elements in the return trip. The \(rdp\) construction guarantees their structure below is preserved by such a roundtrip, and the fact that the two events were identified ensures that no additional structure above was created. This completes the proof.
+\end{proof}
+
+\subsection{Bruns-Lakser Completion}
+
+This section gives an account of a general but under-appreciated piece of lattice theory, which we will make use of, and provides a characterization of how it acts on dependency structures.
+
+In 1970, Bruns and Lakser introduced an indempotent distributive lattice completion for meet-semilattices \cite{bruns1970injective}. Only much later \cite{ball2016dedekind}, was it realized that this completion (though expressed in different terms) was actually introduced by  Holbrook MacNeille in the same 1937 work where he first introduced the famed Dedekind-MacNeille completion of partially ordered sets into complete lattices \cite{macneille1937partially}. 
+
+First, we recall the original construction of Bruns-Lakser and MacNeille.
+
+\begin{definition}
+(Bruns-Lakser) An \textbf{admissible set} is a subset \(S\) of a meet-semilattice \(P\) in which for all \(x\), \(x \wedge \bigvee(S) = \bigvee(x \wedge S)\).
+\end{definition}
+
+\begin{theorem}
+(Bruns-Lakser, MacNeille) The partially ordered set of all admissible sets of a meet-semilattice \(P\) is a distributive lattice, \(\BLc(P)\). There exists an injection \(bl : P \rightarrow \BLc(P)\), which preserves all meets and joins of admissible sets. Furthermore, any morphism to a distributive lattice that preserves all meets and joins of admissible sets, \(f : P \rightarrow D\), factors uniquely into the injection \(bl : P \rightarrow \BLc(P)\) followed by a distributive lattice homomorphism \(g : \BLc(P) \rightarrow D\), as in the following diagram:
+\begin{equation*}
+\begin{tikzcd}
+\BLc(P) \arrow[r, "!",dashed]            & D \\
+P \arrow[u, hook] \arrow[ru, "f"'] &
+\end{tikzcd}
+\end{equation*}
+
+\end{theorem}
+
+The completion is idempotent. Further, it is functorial. \(\BLc\) acts on morphisms that preserve meets and admissible joins (i.e. joins of admissible sets) by lifting their action on all elements in the original source and target, and extending their action on new elements in the source by sending them to the join in the target of the targets of their join-irreducible basis in the source. This functor gives the category of distributive lattices as a reflective category of the subcategory of meet-semilattices which shares all objects but only has morphisms that preserve meets and admissible joins \cite{gehrke2014distributive}. This is to say, given \(i\) as inclusion:
+
+\begin{equation*}
+  (\BLc \dashv i) :  DLat \stackrel{\stackrel{\BLc}{\leftarrow}}{\hookrightarrow}
+  DSLat \subset SLat
+  \,.
+\end{equation*}
+
+The collection of admissible sets can be unwieldy to work with. However, in the finite case, there is a nicer characterization of the completion, which is computationally simple and also suggestive and familiar with regards to structures that occur elsewhere in computer science. The following is a simplification and extension of MacNeille's characterization of the finite elements of his completion, which holds even for posets which are not meet-semilattices:
+
+\begin{lemma}
+For a finite poset, \(\BLc(P)\) may be constructed as \(\Oc(\Jc(P)))\), with an injection that sends join-irreducible elements to their downsets, and composite elements to the union of their join-irreducible basis.
+\end{lemma}
+
+
+
+\begin{figure}
+\centering
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix{& abc \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      \underline{ab} \ar@{-}[d] \ar@{--}[dr] & bc \ar@{-}[dl] \ar@{-}[dr] &
+        \underline{ac} \ar@{-}[d] \ar@{--}[dl] \\
+        \underline{b} & \xcancel{a}  & \underline{c} }         
+%      b \ar@{-}[dr] & \xcancel{a} \ar@{--}[d] & c \ar@{-}[dl] \\
+%       & \emptyset &}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[c]{0.08\textwidth}
+  \begin{equation*}
+    \xymatrix{\ar@2{~>}[r]^{\BLc} &}
+  \end{equation*}
+\end{minipage}
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix{& a_ba_cbc \ar@{-}[dl]  \ar@{-}[dr] & \\
+      \mathbf{a_bbc} \ar@{-}[d] \ar@{-}[dr] & &
+        \mathbf{a_cbc} \ar@{-}[d] \ar@{-}[dl]\\
+        \underline{a_bb} \ar@{-}[d] & bc \ar@{-}[dl] \ar@{-}[dr] &
+          \underline{a_cc} \ar@{-}[d] \\
+         \underline{b} \ar@{-}[dr] & & \underline{c} \ar@{-}[dl] \\
+      & \mathbf{\emptyset} }
+\end{equation*}
+\end{minipage}
+\caption{A simple example of the Bruns-Lakser completion, join irreducible elements (and their image) underlined, new elements in bold}
+\label{Fig1}
+\end{figure}
+
+Consider now the composite \(\BLc(rdp(E,D))\) (which, by notational shorthand, may be written as \(\BLc(E,D)\)). The irreducible elements of a reachable dependency poset are those sets which are generated by the possible dependency sets of individual events -- i.e. that have an event which is shared by no complete dependency set below them. In the example where an event \(a\) depends on either \(b\) or \(c\), the irreducible elements, i.e. \(\Jc(rdp(E,D))\), are \(\{b\}\), \(\{c\}\), \(\{a,b\}\), and \(\{a,c\}\). Hence the application of \(\Oc\) yields the four sets \(\{\{b\}\}\), \(\{\{c\}\}\), \(\{\{b\},\{a,b\}\}\), and \(\{\{c\},\{a,c\}\}\), but also \(\{\}\), \(\{\{b\},\{c\},\{b,c\}\}\) and \(\{\{b\},\{c\},\{a,b\},\{a,c\}\}\) (see Figure \ref{Fig1}).
+
+More generally, in the case of finite posets presented as a collection of sets, with ordering given by inclusion (as in the case of reachable dependency posets), we can give a simple algorithmic characterization of the Bruns-Lakser construction. For every event which has multiple ``paths'' to enable it (i.e. multiple possible dependency sets), split the event into new events, each labeled by a different possible dependency set. And since branched events may depend on other branched events, do so recursively. In the resulting structure, rather than sets of events, there are sets of events each labeled by the ``path'' taken to get to them. From the standpoint of concurrent semantics, this amounts to replacing sets of events by sets of execution traces. 
+
+In many cases, the Bruns-Lakser completion makes intuitive sense in that it provides a more granular and correct specification of what an event ``really'' means. As an example, consider the semantics of a distributed version control system, such as git. Given a base repository, represented as the empty set, we might we might perform two actions on it, represented as \(b\) and \(c\). If these two actions both are the addition of a file with the same name, but with different contents, then it is possible for a third action, \(a\), to be the addition of a line to that file. So while \(a\) depends ``equally'' on either \(b\) or \(c\), the resulting products, \(a_b\) and \(a_c\) are not the same thing. It is this distinction which is captured by taking the idempotent distributive lattice completion. (Since two ways of adding a file with the same name conflict, this holds only as an analogous example and not a precise correspondence, pending future work).
+
+The subscript ``shorthand'' used above renders each event as subscripted by the path of dependencies to reach it. Since that path itself consists of events, in a nontrivial chain, then those events too are subscripted, and soforth. Representing this computationally seems a bit of a chore. If we took each label and turned it into a hash, and then when taking sets of labels instead took hashes of their hashes, etc, then (with high probability) we could represent the same information in constant space rather than space geometric in the height of our poset. This operation -- augmenting a structure such that each element contains a hashed description of the path to reach it -- is relatively ubiquitous in modern software. It in fact lies at the heart of the model of patches in distributed version control systems such as git, and is also used in blockchains. In those cases, while meets exist, joins do not. And further, in the blockchain case, it is even simpler because the goal is to restrict ``truth'' to a chosen linear path -- i.e. to avoid branching or ``splits'' in the chain. This construction is also the basic insight of the nix operating-system, as well as the ``nix-like'' store used by the Cabal build system for Haskell. In these cases, meets and joins both are used. The operation of generating the path information and taking a hash-chain of it is known as producing a \textbf{Merkle tree}\cite{merkle1987digital}. The idempotent distributive lattice completion, \(\BLc\) is then, in a sense,  the \textit{non-probabilistic Merkle transformation} of a poset, and provides a formal description of what it means when we take an existing data structure and ``turn it into a Merkle tree''. \footnote{Note that it is non-probabilistic because the completion does not describe the hashing component of a Merkle tree, which is probablistic, and instead captures only the uniform algebraic structure in the case where hashing is unique.} 
+
+We believe this mathematical characterization helps explain the success of the nix paradigm. Through associating packages with their full dependency trace, users (ideally) no longer have to reason about complex dependency chains, but can instead use purely set-theoretic reasoning, freely taking intersections and unions of desired ``atomized'' target packages. Nonetheless, even in nix, there do remain obstructions to ``living the dream'', in the form of incompatibilities, which we hope to address more thoroughly in future work.
+
+\subsection{DSCs and Finite Locales}
+
+We have seen how a DSC may be transformed into a finite locale via the Bruns-Lakser completion of its reachable dependency poset. It is natural to ask how far this relationship extends. It is almost immediate that any finite locale may be generated by a DSC. All that is necessary is to consider the join-irreducible elements of the frame as events, each of whose single possible dependency set is all other events below it in the frame ordering. However, even up to renaming of events, distinct DSCs can nonetheless present order-equivalent frames. For example, the DSC with \(a\) depending on \(b\) or \(c\) gives the same frame as the DSC with \(a\) depending on \(b\) and \(d\) depending on \(c\) (since the Bruns-Lakser completion ``splits'' the former \(a\) into two copies to begin with). 
+
+This tension (multiple presentations of the same structure) occurs very frequently in topos theory (and its decategorification in locale theory) when multiple sites (categories with a topology, resp. posets with a coverage) can present the same topos (resp. locale). This suggests that a tighter correspondence should not be to locales directly, but rather to their presentations as sites (known, for locales, as ``posites''). A good overview of posites is provided by \cite{schultz2017temporal}.
+
+The central tool in this section is the nucleus, which is the localic analogue of a topology. We recall its definition and some basic facts regarding it. Readers are referred to \cite{johnstone1982stone, vickers1996topology} for further discussion.
+
+A \textbf{nucleus} is the algebraic structure on a frame that gives a sublocale. It given as a monotone function on a frame \(j : L \rightarrow L\), satisfying three properties. First: \(j(a \wedge b) = j(a) \wedge j(b)\). Second, \(a \le j(a)\). Finally, \(j(ja) \le j(a)\). These may be summarized as saying that it is (finite) meet-preserving, contractive (in this case, inflationary) and idempotent. An element of \(L\) is said to be \(j\)-closed if \(j(a)=a\). Further, if \(L\) is a frame, then \(L/j\), which consists only of \(j\)-closed elements, is also a frame, and there exists a surjective frame homomorphism \(j^* : L \rightarrow L/j\). If we view a frame as a category, a nucleus is just a left-exact idempotent monad; if we view a frame as a decategorified topos, a nucleus is a topology; and if we view a frame as generated by its internal logic, a nucleus gives a ``possibility'' or ``locally true'' modal operator on that logic, analogous to the S4 diamond.
+
+A site of a topos is typically given as a category and an associated Grothendieck topology. But such topologies are somewhat painful to manipulate and reason about. In the special case where we are concerned only with the ``(0,1)-sheaves'' (i.e. truth-valued sheaves, i.e. downsets) of a poset, we can equally well just work with a site as a poset and a nucleus on its downsets.
+
+\begin{definition}
+The \textbf{Bruns-Lakser topology} on a finite locale is a function generated by the following stepwise procedure. First we consider the join-irreducible elements of the underlying poset of the locale (i.e. the poset of its join-irreducible elements). We term such elements the ``double basis'' of the locale (which consists of some, but not necessarily all, join-irreducible elements of the locale itself). For double-basis elements, we define \(bl\) as the identity. For all joins of such elements, \(bl\) is again the identity. And for all meets of all elements thus far enumerated, \(bl\) is again the identity. For all other elements, \(bl\) is the meet of all idempotent elements greater than or equal to it. Since we have explicitly added all necessary meets, the result is necessarily an idempotent.
+\end{definition}
+
+\begin{lemma}
+The poset endomorphism, \(bl\), generated by the join-meet completion of the join-irreducible elements of the basis of a distributive lattice is a nucleus.
+\end{lemma}
+\begin{proof}
+Since \(bl\) is idempotent by construction and obviously contractive, we only need show it preserves meets; i.e. that that \(bl(x) \wedge bl(y) = bl(x  \wedge  y)\).  If the meet is a meet of idempotents, then it is preserved by construction. If it is not, then it is the meet of elements which themselves are the meets of idempotents. As such, it may be rewritten to be a meet of idempotents, and thus is also preserved.
+\end{proof}
+
+%TODO not so obvious it is idempotent and contractive! Idempotent -- everything gets sent to one. Contractive -- show that for nonidmepotents, they go up!
+
+\begin{lemma}
+The Bruns-Lakser topology is the least topology which preserves the join-irreducible elements of the underlying poset of a finite frame.
+\end{lemma}
+\begin{proof}
+We consider a finite frame as given by its underlying poset, i.e. as \(\Oc(P)\). Clearly \(\Oc(P)/bl\) contains elements corresponding to all join-irreducible elements in \(P\), and they remain join-irreducible as no elements are added below them. Further, as it is a frame, it is a distributive lattice. It remains to show that it is the least such lattice. The only idempotents which could introduce new join-irreducible elements in the induced basis are the meets of existing elements, of the form  \(z = x \wedge y\). Then \(z = (a \vee b) \wedge (c \vee d)\) for some four elements (possibly overlapping) which are themselves join-irreducible or joins of join-irreducible elements.  By the laws of distributive lattices we may rewrite between disjunctive and conjunctive normal forms and so \(z = \bigvee \{a \wedge c, a \wedge d, b \wedge c, b \wedge d\}\).  But now it is a join of smaller meets. Inductively, either these meets are join-irreducible themselves, or they may be further iteratively decomposed until they are, and therefore the original element is a join of irreducible elements.
+\end{proof}
+
+We can now state the central theorem of this section:
+
+\begin{theorem}
+The set of DSCs is one-to-one with the set of finite posites generated by downsets of upper semimodular lattices without \(M_3\), and equipped with the Bruns-Lakser topology.
+\end{theorem}
+\begin{proof}
+The bulk of the work is handled by theorem \ref{representation}, which establishes the connection between DSCs and upper semimodular lattices without \(M_3\). The correspondence between these and their downsets is established by Birkhoff duality, and the construction of a locale by Bruns-Lakser by the above lemma.
+\end{proof}
+
+\section{Version Parameterizations of Dependency Structures and Nuclei}
+
+In a DSC, some events are in a sense ``universally more powerful'' than other events, in that they enable at least all the things enabled by the events they cover. Taking this information into account can drastically reduce the size of the attendant reachable dependency poset of a DSC, and so simplify reasoning about such structures. We say an event is a ``higher version'' of another event if for possible dependency set of every event containing the lower event, there is also a possible dependency set for that event which differs only in that it contains the higher event instead.
+
+\begin{definition}
+A \textbf{version parameterization} of a DSC is an idempotent endofunction on events, from lower to higher, satisfying the above criteria; i.e. for every possible dependency set of every event, there is another possible dependency set of that event where the lower versions have been substituted for higher versions. Idempotency here translates into the condition that no higher event is itself a lower event of something else.
+\end{definition}
+
+Versioning parameterizations on DSCs in turn give rise to related structures on their reachable dependency posets. Since a reachable dependency poset is complete under joins, for every two event sets differing only in versions of some events, we can take the element corresponding to the union of their event sets. This yields a  endofunction on elements of the reachable dependency poset, sending (``contracting'') the lower and higher event sets both to their corresponding union. We term such an endofunction a poset version parameterization.
+
+\begin{definition}
+A \textbf{ponucleus} is an idempotent monotone endofunction on a poset which preserves existing finite meets.
+\end{definition}
+
+\begin{lemma}
+Every poset version parameterization is a ponucleus that in addition preserves existing joins.
+\end{lemma}
+
+\begin{proof}
+Clearly this function is idempotent and monotone by construction. It remains to show it preserves meets and joins.
+
+First we consider meets. If two sets had a meet before, and one is now ``contracted'' to a higher version, this may introduce new elements in the intersection only on the condition that these elements were also in the second set. But that would mean that the elements of the second set would also be contracted in the same way, as would the elements in the intersection itself.
+
+Next, we consider joins. If two sets had a join before, and one was contracted to a higher version, then this would introduce new elements in the union. But those elements are the same element which are introduced by contracting the union directly.
+\end{proof}
+
+Since poset version parameterizations preserve existing meets and joins, they certainly preserve meets and maximal joins, and thus are acted on by \(\BLc\).
+
+\begin{theorem}
+Given a join-preserving ponucleus \(j\), on a poset \(P\),  \(\BLc(j)\) is a nucleus on \(\BLc(P)\)
+\end{theorem}
+\begin{proof}
+First we consider meet preservation. Since we know that \(j\) preserves meets, we only need observe that the action of \(\BLc\) on morphisms preserves meet-preservation. This follows from the fact that \(\BLc\) itself preserves meets.
+
+Next, we consider contractivity. We already defined \(j\) to be contractive. So now we only need observe that \(\BLc\) preserves contractivity. For this to fail, it would need to extend a morphism so that some element was mapped to something below itself. But since contractivity is preserved for the basis join-irreducible elements, it must be preserved for all elements.
+
+Finally, we consider idempotence. Again, this is given by idempotence of \(j\) combined with \(\BLc\) preserving idempotence of join-irreducible elements.
+\end{proof}
+
+As a corollary of the above, given a DSC \((E,D)\) and a version parameterization with an induced poset version parameterization \(p\), then \(\BLc(p)\) is a nucleus on \(\BLc(E,D)\).
+
+To make this concrete, we consider our running example with three events, such that \(a\) depends on \(b\) or \(c\), but now consider \(c\) to be a higher version of \(b\). The \(j\)-closed elements (fixpoints) of the induced nucleus on the \(rdp\) of this structure are then \(\emptyset\), \(bc\), and \(abc\), and the fixpoints of the induced nucleus on the Bruns-Lakser completion of such are \(\emptyset\), \(bc\), and \(a_ba_cbc\). This is illustrated in Fig. \ref{Fig4}. Note that every element has a unique least element of the set of fixed-points that is greater than or equal to it.
+
+\begin{figure}
+\centering
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix{& \underline{abc} \ar@{-}[dl] \ar@{-}[d] \ar@{-}[dr] & \\
+      ab \ar@{-}[d] & \underline{bc} \ar@{-}[dl] \ar@{-}[dr] &
+        ac \ar@{-}[d]  \\
+        b \ar@{-}[dr] & & c \ar@{-}[dl]         \\
+%      b \ar@{-}[dr] & \xcancel{a} \ar@{--}[d] & c \ar@{-}[dl] \\
+       & \underline{\emptyset} &}
+\end{equation*}
+\end{minipage}
+\begin{minipage}[c]{0.08\textwidth}
+  \begin{equation*}
+    \xymatrix{\ar@2{~>}[r]^{\BLc} &}
+  \end{equation*}
+\end{minipage}
+\begin{minipage}[c]{0.3\textwidth}
+\begin{equation*}
+    \xymatrix{& \underline{a_ba_cbc} \ar@{-}[dl]  \ar@{-}[dr] & \\
+      a_bbc \ar@{-}[d] \ar@{-}[dr] & &
+        a_cbc \ar@{-}[d] \ar@{-}[dl]\\
+        a_bb \ar@{-}[d] & \underline{bc} \ar@{-}[dl] \ar@{-}[dr] &
+          a_cc \ar@{-}[d] \\
+         b \ar@{-}[dr] & & c \ar@{-}[dl] \\
+      & \underline{\emptyset} }
+\end{equation*}
+\end{minipage}
+\caption{The running example of choice, when equipped with a version policy that gives \(c\) as a higher version of \(b\), both on the reachable dependency poset, and its Bruns-Lakser completion. Fixed points of the induced nucleus are indicated by underline.}
+\label{Fig4}
+\end{figure}
+
+\section{The Modal Logic of Dependencies}
+As discussed above, part of the basic theory of Heyting algebras is that they possess an internal intuitionistic logic. Here we sketch how it works in our particular case.
+
+Given a DSC \((E,D)\), we construct a language consisting of atoms given by join-irreducible elements of the reachable dependency poset (which may be thought of, as above, as events subscripted with their dependency trace), completed under the standard logical connectives. Every formula in this language corresponds to a particular element in the Merkle-lattice of our DSC, \(\BLc(E,D)\).  Conjunction corresponds to meet, disjunction to join, and implication to the relative pseudo-complement. The behavior of implication is best considered piecewise. When \(x \rightarrow y\), if \(y\) lies above \(x\) the result is top, and otherwise, the result is \(y\).
+
+This is a logic of reachable states of our system, and their traces, which describes all possible states of the system as disjunctions of join-irreducible states. Given two event sets, considered as reachable states, disjunction gives the set of events that have occurred in either state. Conjunction gives the set of events which have occurred in both states. Implication may be seen as a relativized characteristic function, indicating when one state is reachable from another.
+
+The pvp-induced nucleus discussed above equips the internal logic of \(\BLc(E,D)\) with a modal operator. We can interpret this operator as ``round (or upgrade) to the highest version'', and give corresponding interpretations of the meaning of its basic laws. \(x \rightarrow \Dia{x}\) tells us that everywhere \(x\) is valid, so too is its highest version (which is precisely how we constructed our modality to begin with). \(\Dia\Dia{x} \rightarrow \Dia{x}\) tells us that the highest version of the highest version is just the highest version. \((x \rightarrow y) \rightarrow (\Dia{x} \rightarrow \Dia{y})\)  tells us that if an implication holds for an event set, then the highest version of that set implies the highest version of the consequent. Finally, \(\Dia(x \band y) = \Dia{x} \band \Dia{y}\) tells us that the highest version of a conjunction may be computed as the conjunction of the highest versions of its constituents.
+
+This modality is powerful enough to yield an internal ``bind'' operator. We have a strength that gives \(x \band \Dia{y} \rightarrow \Dia(x \band y)\). Furthermore, we have an internal evaluation \(x \band (x \rightarrow y) \rightarrow y\). Together, they allow us to generate a ``bind'' of the form \(\Dia{x} \band (x \rightarrow \Dia{y}) \rightarrow \Dia{y}\), read as ``if we know that some version of x implies the highest version of y, then to imply y it suffices to consider the highest version of x''. Hence, we have a computational monad in the sense of Moggi \cite{moggi1991notions}, and rounding (or ``upgrading'') is an ``effect''. 
+
+Put another way, concurrent programs each give rise to ``little programming languages'' that specify particular paths within them, and subject to modal rules which let us quotient the event sets down to a simpler basis, such that valid equations in the simpler basis translate to valid equations in the original semantics. 
+
+\section{Solutions to Dependency Problems, and their Combinatorial Properties}
+It is evident that when we wish to consider search problems regarding paths to enable events, considering the structure of dependencies and their versioning quotients can drastically reduce the complexity of the task. To make this precise, we define a general notion of a dependency problem, and show that the complexity of solving such problems may be related to order-theoretic properties of the dependency structures they are calculated over. One particular application of this is in finding solutions to package requirements in a programming language that are free of incompatibilities.
+
+\begin{definition}
+A dependency problem in a DSC \((E,D)\) is the pair of a formula \(\phi\) in first order logic with atoms given as join-irreducible elements of \(rdp(E,D)\) and a monotone increasing (i.e. growing as further elements are added to the source set) objective function of type \(\Pc(E) \rightarrow \mathbb{R}\). A solution to such a problem is an event set which satisfies the formula and minimizes the objective function.
+\end{definition}
+
+This naturally encodes many problems. For example, it allows us to calculate the minimal dependencies needed to enable a given event. Further, if we associate a cost function which counts the number of incompatibilities or conflicts in a given event set, then a conflict-free solution is possible only when a minimal solution has a cost of zero.
+
+Solving a dependency problem does not mean a brute force search over all event sets which satisfy the formula. In particular, since the objective function is monotone, we need only examine the minimal event sets which satisfy it (in the ordering induced by \(\BLc(E,D)\)). Such sets in \(\BLc(E,D)\) form a maximal  antichain (or cut) -- i.e. they are unordered with relation to one another, but every other point on the lattice is ordered with regards to at least one such set.
+
+This encourages us to focus on the maximum size of an antichain within a poset -- known as the width of the poset, which we denote as \(\Wf(P)\). This tells us, given a dependency structure, the maximum number of sets we have to consider in any dependency problem, with any specified formula. This is to say that the maximum width of the collection of downsets over a poset is the same as the maximum number of disjuncts in a formula over the join-irreducible elements of the poset presented in disjunctive normal form, and modulo appropriate relations.  
+
+By Sperner's Theorem, first published in 1928, the powerset of a set with \(n\) elements, under inclusion ordering, has a width of \(\binom{n}{\ceil{n/2}}\).\footnote{Because this picks out the central elements of Pascal's triangle, using ceiling or floor here yields the same sequence. For symmetry with our more general result, contrary to standard convention, we prefer to use ceiling.}  Sperner's Theorem lies at the foundation of a field of combinatorics known as extremal set theory and is closely related to the methods and tools of algebraic combinatorics. Using techniques from these fields, we can give bounds that capture this general relationship between width, size, and dependency degree.
+
+A key step in doing so is a lemma provided to us by Richard Stanley \cite{343183}.
+
+\begin{lemma}
+\textbf{Stanley's Width Lemma (2019)}: Define on an integer \(h\), \((h) = 1 + x + x^2 \ldots x^{h-1}\). In a product of chains (linear orders considered as posets) of sizes \(h_1 \ldots h_n\), the width is given as the middle coefficient of the polynomial \((h_1) * (h_2) * \ldots * (h_n)\).
+\end{lemma}
+
+A corollary of this, which is more straightforward to compute is the following:  Define \(\Mf(a,b)\) as the central (maximal) coefficient of the formal polynomial expansion of \((1 + x + x^2 ... + x^a)^b\). (When \(a\) is 2, this is the central binomial coefficient, as appearing in Sperner's Theorem, as \(a\) increases this results in central coefficients of higher multinomials). Given a product of \(x\) chains all of size \(y\), then the width is \(\Mf(x,y)\).
+
+With this in hand, we can provide an upper bound on the width of our dependency structures under consideration:
+
+\begin{theorem}
+Define \(\Hf(P)\) as the height of a poset, i.e. the length of its longest chain. Given any poset \(P\), then \(\Wf(\Oc(P)) \le \Mf(2,\Wf(P)) * \Mf(\Hf(P),\ceil{\Wf(P)/2})\).
+\end{theorem}
+
+\begin{proof} 
+We first partition \(P\) into a collection of maximal antichains. There are, by definition \(\Wf(P)\) many of these. We next ``round'' each antichain up to \(\Hf(P)\). Now, by Sperner, the powerset of this collection of chains (considered as a discrete set) has the width given in the first half of our product. But we are interested not only in the powerset, but the ``power-product''. This is to say, for each choice of a collection of chains, we must \textit{also} make a choice of an element within each chain. Therefore, for each maximal subset of chains (which by Sperner necessarily have size \(\Wf(P)/2\)), we calculate the maximal size of an antichain within it. For that, we make use of Stanley's width lemma. The resultant product then gives the total maximal size of an antichain.
+\end{proof}
+
+When a poset is discrete (i.e., a set) then this collapses to a statement of the central inequality of Sperner's Theorem.
+
+Clearly, as the width of a poset decreases, so too does the width of its downset lattice. This validates the observation that additional dependency (or versioning) structure on a collection of events allows a more efficient traversal of a much smaller search space, and provides some bounds characterizing the extent of this efficiency.
+
+\section{Conclusion and Future  Work}
+Prior literature on event structures has tended to examine restrictions on the degree of choice (i.e. prime event structures, etc). Here we took the opposite approach and considered restrictions on the degree of conflict, yielding a system with interesting order-theoretic and logical properties, as captured by representation theorems. Our hope in future work is to find a way to reintroduce conflict while maintaining some of the nice properties developed, yielding representations of general event structures in a setting with conflict alongside the order-theoretic structure, and hopefully amenable  to analysis by means of tools from algebraic topology.
+
+%%
+%% Bibliography
+%%
+
+%% Please use bibtex, 
+
+\bibliography{cf-event-structures}
+
+
+\end{document}
