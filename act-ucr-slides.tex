@@ -72,10 +72,6 @@
 \begin{frame}
 		\titlepage
 \end{frame}
-\begin{frame}
-\frametitle{Outline}
-\tableofcontents
-\end{frame}
 
 
 \begin{frame}
@@ -93,59 +89,6 @@ Gershom Bazerman, Raymond Puzio
 \begin{block}{Disclaimer}
 Everything in sight is assumed to be finite (for now).
 \end{block}
-\end{frame}
-
-\section{Prehistory}
-\begin{frame}
-\frametitle{Petri Nets}
-\includegraphics[width=6cm]{petri}
-\centering
-\linebreak Note: the initial token placement is part of the data.
-\end{frame}
-\begin{frame}
-\frametitle{Prehistory}
-
-"Petri nets, event structures and domains, part I," Mogens Nielsen, Gordon Plotkin, Glynn Winskel (1981)
-
-\begin{itemize}
-\item Causal nets (where each token placement has one move and derives from one move) 
-\linebreak \(\Leftrightarrow\) Simple event structures (posets)
-\linebreak \(\Leftrightarrow\) Prime Algebraic Complete Lattices
-\item Occurrence nets (where each token placement derives from one move, but may have multiple moves)
-\linebreak \(\Leftrightarrow\) Event structures (posets with conflict) 
-\linebreak \(\Leftrightarrow\) Prime Algebraic Coherent Posets
-\end{itemize}
-
-\end{frame}
-\begin{frame}
-\frametitle{Prehistory}
-"Event Structures," Glynn Winskel (1986)
-\begin{itemize}
-\item Safe nets (always at most one token on a given place) have Occurrence nets as a coreflective subcategory.
-\item General event structures ("multiposets" with conflict) have Stable event structures as a subcategory (where when events have two possible causes, those causes conflict).
-\item Stable event structures \linebreak \(\Leftrightarrow\)  Event structures (aka prime event structures).
-\item Safe petri nets \(\Leftrightarrow\) Domains
-\item General event structures are good in their own right! Model CCS, CSP, etc.
-\end{itemize}
-
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Recent history}
-"Configuration Structures, Event Structures and Petri Nets," RJ van Glabbeek and Gordon Plotkin (2009)
-\begin{itemize}
-\item Loop free petri-nets
-\linebreak \(\Leftrightarrow\) Configuration structures (equational)
-\linebreak \(\Leftrightarrow\) Pure Multi-event structures (sets enable sets, no element is on the left and right side of an enablement).
-\linebreak \(\Leftrightarrow\) (extensional) Chu space
-\end{itemize}
-
-Open Question?
-\begin{itemize}
-\item \([?]\) petri-nets
-\linebreak \(\Leftrightarrow\) General event structures
-\end{itemize}
 \end{frame}
 
 
@@ -214,6 +157,61 @@ A \textbf{Dependency Structure with Choice} (DSC) is a pre-DSC with \(D\) satisf
 \(X\) is a \textbf{possible dependency set} of \(e\) if \(X \in D(e)\). An event set \(X\) is a \textbf{complete event sent} if for every element \(e\) there is a possible dependency set \(Y\) of \(e\) such that \(Y \subseteq X\). A pre-DSC is a DSC if every possible dependency set of every element is complete and cycle-free.
 \end{frame}
 
+
+\section{Prehistory}
+\begin{frame}
+\frametitle{Petri Nets}
+\includegraphics[width=6cm]{petri}
+\centering
+\linebreak Note: the initial token placement is part of the data.
+\end{frame}
+\begin{frame}
+\frametitle{Prehistory}
+
+"Petri nets, event structures and domains, part I," Mogens Nielsen, Gordon Plotkin, Glynn Winskel (1981)
+
+\begin{itemize}
+\item Causal nets (where each token placement has one move and derives from one move) 
+\linebreak \(\Leftrightarrow\) Simple event structures (posets)
+\linebreak \(\Leftrightarrow\) Prime Algebraic Complete Lattices
+\item Occurrence nets (where each token placement derives from one move, but may have multiple moves)
+\linebreak \(\Leftrightarrow\) Event structures (posets with conflict) 
+\linebreak \(\Leftrightarrow\) Prime Algebraic Coherent Posets
+\end{itemize}
+
+\end{frame}
+\begin{frame}
+\frametitle{Prehistory}
+"Event Structures," Glynn Winskel (1986)
+\begin{itemize}
+\item Safe nets (always at most one token on a given place) have Occurrence nets as a coreflective subcategory.
+\item General event structures ("multiposets" with conflict) have Stable event structures as a subcategory (where when events have two possible causes, those causes conflict).
+\item Stable event structures \linebreak \(\Leftrightarrow\)  Event structures (aka prime event structures).
+\item Safe petri nets \(\Leftrightarrow\) Domains
+\item General event structures are good in their own right! Model CCS, CSP, etc.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Recent history}
+"Configuration Structures, Event Structures and Petri Nets," RJ van Glabbeek and Gordon Plotkin (2009)
+\begin{itemize}
+\item Loop free petri-nets
+\linebreak \(\Leftrightarrow\) Configuration structures (equational)
+\linebreak \(\Leftrightarrow\) Pure Multi-event structures (sets enable sets, no element is on the left and right side of an enablement).
+\linebreak \(\Leftrightarrow\) (extensional) Chu space
+\end{itemize}
+
+Open Question?
+\begin{itemize}
+\item \([?]\) petri-nets
+\linebreak \(\Leftrightarrow\) General event structures
+\end{itemize}
+\end{frame}
+
+\section{RDPs}
 \begin{frame}
 \frametitle{reachable dependency posets}
 A dependency structure has an associated reachable dependency poset (or ``configuration family") which is a subposet of \(\Pc(E)\) generated by possible dependency sets augmented by their ``parent" and ordered by inclusion. A rdp (when there is no conflict data) has all joins, and is bounded, so therefore is a lattice.
@@ -521,6 +519,15 @@ If \(a\) depends on \(b\) then this no longer satisfies the chain condition.
 \end{frame}
 
 
+
+
+\begin{frame}[allowframebreaks]
+        \frametitle{References}
+         \nocite{*}
+        \bibliographystyle{amsalpha}
+	\bibliography{act-ucr-slides}
+\end{frame}
+
 \section{Free Distributive Lattices}
 \begin{frame}
 \frametitle{Internal Logics}
@@ -589,15 +596,6 @@ The cost of solving a dependency problem over a poset is bounded by the maximum 
 \end{equation*}
 \end{theorem}
 \end{frame}
-
-
-\begin{frame}[allowframebreaks]
-        \frametitle{References}
-         \nocite{*}
-        \bibliographystyle{amsalpha}
-	\bibliography{act-ucr-slides}
-\end{frame}
-
 
 \begin{frame}
 \begin{definition}
